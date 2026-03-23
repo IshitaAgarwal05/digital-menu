@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>हमारा डिजिटल मेनू</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #fdf2f2; text-align: center; }
+        header { background: #e44d26; color: white; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .menu-container { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; gap: 20px; }
+        
+        .menu-card { 
+            background: white; 
+            border-radius: 15px; 
+            width: 280px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); 
+            overflow: hidden; 
+            transition: transform 0.3s;
+        }
+        .menu-card:hover { transform: translateY(-5px); }
+        .menu-card img { width: 100%; height: 200px; object-fit: cover; }
+        
+        .info { padding: 15px; }
+        .info h3 { margin: 10px 0; color: #333; font-size: 1.4em; }
+        .price { color: #e44d26; font-weight: bold; font-size: 1.2em; margin-bottom: 10px; }
+        
+        #loading { margin-top: 50px; font-size: 1.2em; color: #666; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ताज़ा और स्वादिष्ट मेनू</h1>
+        <p>आज के उपलब्ध फ्लेवर्स</p>
+    </header>
+
+    <div id="loading">मेनू लोड हो रहा है, कृपया रुकें...</div>
+    <div class="menu-container" id="menu-box"></div>
+
+    <script>
+        // अपना Web App URL यहाँ नीचे वाले कोट्स के बीच पेस्ट करें
+        const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyDq-o7EtorF4-P-Pi-c28NnboDLGuv4i4_eytMXXiE8JobpVf2ROowu-JExYzzWDU/exec"; 
+
+        async function loadMenu() {
+            try {
+                const response = await fetch(googleSheetUrl);
+                const data = await response.json();
+                
+                const menuBox = document.getElementById('menu-box');
+                const loading = document.getElementById('loading');
+                
+                loading.style.display = 'none'; // लोडिंग टेक्स्ट हटाएँ
+                menuBox.innerHTML = ''; // पुराना डेटा साफ करें
+
+                data.forEach(item => {
+                    // अगर Google Sheet में Available "true" है, तभी दिखाएं
+                    if (item.available === true) {
+                        menuBox.innerHTML += `
+                            <div class="menu-card">
+                                <img src="${item.img}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/280x200?text=No+Image'">
+                                <div class="info">
+                                    <h3>${item.name}</h3>
+                                    <div class="price">₹${item.price}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            } catch (error) {
+                document.getElementById('loading').innerText = "डेटा लोड करने में समस्या आई। कृपया URL चेक करें।";
+                console.error(error);
+            }
+        }
+
+        // पेज खुलते ही फंक्शन चलाएं
+        loadMenu();
+    </script>
+</body>
+</html>
