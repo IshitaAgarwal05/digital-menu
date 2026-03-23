@@ -5,42 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Ice Cream Menu</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background-color: #fdf2f2; text-align: center; }
-        header { background: linear-gradient(135deg, #e44d26, #f16529); color: white; padding: 25px 10px; }
-        
-        /* Filter Buttons Style */
-        .filter-container { margin: 20px 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 0 10px; }
-        .filter-btn { 
-            padding: 10px 20px; border: 2px solid #e44d26; background: white; color: #e44d26; 
-            border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.3s;
+        :root {
+            --primary-color: #e44d26;
+            --mother-dairy: #006eb5;
+            --london-dairy: #b38b4d;
+            --bg-color: #f8f9fa;
         }
-        .filter-btn.active, .filter-btn:hover { background: #e44d26; color: white; }
 
-        .menu-container { display: flex; flex-wrap: wrap; justify-content: center; padding: 10px; gap: 20px; }
-        .menu-card { background: white; border-radius: 20px; width: 260px; box-shadow: 0 8px 15px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #eee; }
-        .menu-card img { width: 100%; height: 180px; object-fit: cover; }
-        .info { padding: 15px; }
-        .brand-tag { font-size: 0.8em; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-        .price { color: #e44d26; font-weight: bold; font-size: 1.3em; margin-top: 5px; }
-        #status-msg { margin-top: 30px; color: #666; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg-color); text-align: center; color: #333; }
+        
+        header { 
+            background: #fff; 
+            padding: 30px 10px; 
+            border-bottom: 5px solid var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        header h1 { margin: 0; font-size: 2em; color: #222; text-transform: uppercase; }
+        header p { margin: 5px 0 0; color: #666; font-style: italic; }
+
+        /* Premium Filters */
+        .filter-container { margin: 25px 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; padding: 0 15px; }
+        .filter-btn { 
+            padding: 12px 24px; border: none; background: #fff; color: #444; 
+            border-radius: 50px; cursor: pointer; font-weight: 600; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.3s ease;
+        }
+        .filter-btn.active { background: var(--primary-color); color: white; transform: scale(1.05); }
+
+        .menu-container { display: flex; flex-wrap: wrap; justify-content: center; padding: 10px; gap: 25px; }
+        
+        /* Premium Card Design */
+        .menu-card { 
+            background: white; border-radius: 25px; width: 300px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); overflow: hidden; 
+            transition: all 0.4s ease; border: 1px solid rgba(0,0,0,0.03);
+            position: relative;
+        }
+        .menu-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .menu-card img { width: 100%; height: 220px; object-fit: cover; }
+        
+        .info { padding: 20px; text-align: left; }
+        .brand-badge { 
+            display: inline-block; padding: 4px 12px; border-radius: 20px; 
+            font-size: 0.75em; font-weight: bold; color: white; margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        /* ब्रांड के अनुसार अलग-अलग कलर्स */
+        .badge-mother-dairy { background: var(--mother-dairy); }
+        .badge-london-dairy { background: var(--london-dairy); }
+        .badge-default { background: #666; }
+
+        .item-name { font-size: 1.3em; font-weight: 700; color: #222; margin: 0; }
+        .price { color: var(--primary-color); font-weight: 800; font-size: 1.5em; margin-top: 10px; display: block; }
+        
+        #status-msg { margin-top: 50px; font-weight: 500; color: #888; }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <header>
-        <h1>Our Digital Menu</h1>
-        <p>Select your favorite brand below</p>
+        <h1>Exclusive Ice Cream Menu</h1>
+        <p>Premium flavors at your fingertips</p>
     </header>
 
     <div class="filter-container" id="filter-box">
         <button class="filter-btn active" onclick="filterMenu('All', this)">All Brands</button>
-        </div>
+    </div>
 
-    <div id="status-msg">Loading flavors...</div>
+    <div id="status-msg">Fetching our latest collection...</div>
     <div class="menu-container" id="menu-box"></div>
 
     <script>
-        const googleSheetUrl = "https://script.google.com/macros/s/AKfycbwS8NLxa9SP6KP0IFqUyzMztpcO6q0BzvtDXA0_MasxkeKPPKSbUK8O0iEQdHDZXIE/exec"; // यहाँ नया URL डालें
+        const googleSheetUrl = "https://script.google.com/macros/s/AKfycbwS8NLxa9SP6KP0IFqUyzMztpcO6q0BzvtDXA0_MasxkeKPPKSbUK8O0iEQdHDZXIE/exec"; 
         let allItems = [];
 
         async function loadData() {
@@ -50,13 +88,12 @@
                 createFilterButtons();
                 renderMenu('All');
             } catch (error) {
-                document.getElementById('status-msg').innerText = "Failed to load menu.";
+                document.getElementById('status-msg').innerText = "Unable to connect. Check internet.";
             }
         }
 
         function createFilterButtons() {
             const filterBox = document.getElementById('filter-box');
-            // उपलब्ध ब्रांड्स की यूनिक लिस्ट निकालें
             const brands = [...new Set(allItems.map(item => item.brand).filter(b => b))];
             
             brands.forEach(brand => {
@@ -69,7 +106,6 @@
         }
 
         function filterMenu(brand, btnElement) {
-            // बटन का कलर बदलें
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             btnElement.classList.add('active');
             renderMenu(brand);
@@ -83,24 +119,28 @@
 
             const filteredItems = allItems.filter(item => {
                 const isAvailable = String(item.available).toLowerCase() === 'yes';
-                const matchesBrand = (filter === 'All' || item.brand === filter);
-                return isAvailable && matchesBrand;
+                return isAvailable && (filter === 'All' || item.brand === filter);
             });
 
             if (filteredItems.length === 0) {
                 statusMsg.style.display = 'block';
-                statusMsg.innerText = "No items available for this selection.";
+                statusMsg.innerText = "Current selection is unavailable.";
                 return;
             }
 
             filteredItems.forEach(item => {
+                // ब्रांड के हिसाब से क्लास चुनना
+                let badgeClass = 'badge-default';
+                if(item.brand.toLowerCase().includes('mother')) badgeClass = 'badge-mother-dairy';
+                if(item.brand.toLowerCase().includes('london')) badgeClass = 'badge-london-dairy';
+
                 menuBox.innerHTML += `
                     <div class="menu-card">
-                        <img src="${item.img || 'https://via.placeholder.com/260x180'}" onerror="this.src='https://via.placeholder.com/260x180'">
+                        <img src="${item.img || 'https://via.placeholder.com/300x220'}" onerror="this.src='https://via.placeholder.com/300x220?text=Premium+Ice+Cream'">
                         <div class="info">
-                            <div class="brand-tag">${item.brand}</div>
-                            <h3>${item.name}</h3>
-                            <div class="price">₹${item.price}</div>
+                            <span class="brand-badge ${badgeClass}">${item.brand}</span>
+                            <h3 class="item-name">${item.name}</h3>
+                            <span class="price">₹${item.price}</span>
                         </div>
                     </div>
                 `;
