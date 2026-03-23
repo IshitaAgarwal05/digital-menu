@@ -3,107 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Inventory Menu</title>
+    <title>Premium Ice Cream Menu</title>
     <style>
-        /* Clean and Modern Design */
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background-color: #fdf2f2; text-align: center; color: #333; }
-        header { background: linear-gradient(135deg, #e44d26, #f16529); color: white; padding: 30px 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        header h1 { margin: 0; font-size: 2.2em; text-transform: uppercase; letter-spacing: 1px; }
-        header p { margin: 10px 0 0; opacity: 0.9; font-size: 1.1em; }
-
-        .menu-container { display: flex; flex-wrap: wrap; justify-content: center; padding: 10px; gap: 20px; min-height: 300px; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background-color: #fdf2f2; text-align: center; }
+        header { background: linear-gradient(135deg, #e44d26, #f16529); color: white; padding: 25px 10px; }
         
-        /* Card Styling */
-        .menu-card { 
-            background: white; 
-            border-radius: 20px; 
-            width: 280px; 
-            box-shadow: 0 8px 15px rgba(0,0,0,0.08); 
-            overflow: hidden; 
-            transition: transform 0.3s ease;
-            border: 1px solid #eee;
+        /* Filter Buttons Style */
+        .filter-container { margin: 20px 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 0 10px; }
+        .filter-btn { 
+            padding: 10px 20px; border: 2px solid #e44d26; background: white; color: #e44d26; 
+            border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.3s;
         }
-        .menu-card:hover { transform: translateY(-8px); }
-        .menu-card img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
-        
-        .info { padding: 15px; }
-        .info h3 { margin: 5px 0; font-size: 1.5em; color: #222; }
-        .price { color: #e44d26; font-weight: bold; font-size: 1.4em; margin-top: 10px; }
+        .filter-btn.active, .filter-btn:hover { background: #e44d26; color: white; }
 
-        /* Status and Refresh Button */
-        #status-msg { margin-top: 50px; font-size: 1.2em; color: #666; padding: 20px; }
-        .refresh-btn { background: #e44d26; color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-size: 1em; margin-bottom: 20px; font-weight: bold; transition: background 0.3s; }
-        .refresh-btn:hover { background: #c53a1a; }
+        .menu-container { display: flex; flex-wrap: wrap; justify-content: center; padding: 10px; gap: 20px; }
+        .menu-card { background: white; border-radius: 20px; width: 260px; box-shadow: 0 8px 15px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #eee; }
+        .menu-card img { width: 100%; height: 180px; object-fit: cover; }
+        .info { padding: 15px; }
+        .brand-tag { font-size: 0.8em; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        .price { color: #e44d26; font-weight: bold; font-size: 1.3em; margin-top: 5px; }
+        #status-msg { margin-top: 30px; color: #666; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>Our Digital Menu</h1>
-        <p>Fresh & Available Flavors</p>
+        <p>Select your favorite brand below</p>
     </header>
 
-    <button class="refresh-btn" onclick="loadMenu()">🔄 Refresh Menu</button>
+    <div class="filter-container" id="filter-box">
+        <button class="filter-btn active" onclick="filterMenu('All', this)">All Brands</button>
+        </div>
 
-    <div id="status-msg">Loading menu, please wait...</div>
+    <div id="status-msg">Loading flavors...</div>
     <div class="menu-container" id="menu-box"></div>
 
     <script>
-        // *** PASTE YOUR GOOGLE APPS SCRIPT URL BELOW ***
-        const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyDq-o7EtorF4-P-Pi-c28NnboDLGuv4i4_eytMXXiE8JobpVf2ROowu-JExYzzWDU/exec"; 
+        const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyDq-o7EtorF4-P-Pi-c28NnboDLGuv4i4_eytMXXiE8JobpVf2ROowu-JExYzzWDU/exec"; // यहाँ नया URL डालें
+        let allItems = [];
 
-        async function loadMenu() {
-            const menuBox = document.getElementById('menu-box');
-            const statusMsg = document.getElementById('status-msg');
-            
-            statusMsg.style.display = 'block';
-            statusMsg.innerText = "Checking latest stock...";
-            menuBox.innerHTML = ''; 
-
+        async function loadData() {
             try {
                 const response = await fetch(googleSheetUrl);
-                const data = await response.json();
-                
-                if (!data || data.length === 0) {
-                    statusMsg.innerText = "No items found in the menu.";
-                    return;
-                }
-
-                statusMsg.style.display = 'none'; 
-
-                data.forEach(item => {
-                    // Availability Check: Matches 'Yes' (case insensitive) or true boolean
-                    const isAvailable = String(item.available).toLowerCase() === 'yes' || item.available === true;
-                    
-                    if (isAvailable) {
-                        menuBox.innerHTML += `
-                            <div class="menu-card">
-                                <img src="${item.img || 'https://via.placeholder.com/280x200?text=No+Image'}" 
-                                     alt="${item.name}" 
-                                     onerror="this.src='https://via.placeholder.com/280x200?text=Ice+Cream'">
-                                <div class="info">
-                                    <h3>${item.name}</h3>
-                                    <div class="price">₹${item.price}</div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-
-                // If no items are marked as available
-                if (menuBox.innerHTML === '') {
-                    statusMsg.style.display = 'block';
-                    statusMsg.innerText = "Sorry, everything is currently out of stock!";
-                }
-
+                allItems = await response.json();
+                createFilterButtons();
+                renderMenu('All');
             } catch (error) {
-                statusMsg.innerText = "Failed to load data. Please check your internet or URL.";
-                console.error("Error fetching data:", error);
+                document.getElementById('status-msg').innerText = "Failed to load menu.";
             }
         }
 
-        // Auto-load menu on page load
-        window.onload = loadMenu;
+        function createFilterButtons() {
+            const filterBox = document.getElementById('filter-box');
+            // उपलब्ध ब्रांड्स की यूनिक लिस्ट निकालें
+            const brands = [...new Set(allItems.map(item => item.brand).filter(b => b))];
+            
+            brands.forEach(brand => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                btn.innerText = brand;
+                btn.onclick = (e) => filterMenu(brand, e.target);
+                filterBox.appendChild(btn);
+            });
+        }
+
+        function filterMenu(brand, btnElement) {
+            // बटन का कलर बदलें
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            renderMenu(brand);
+        }
+
+        function renderMenu(filter) {
+            const menuBox = document.getElementById('menu-box');
+            const statusMsg = document.getElementById('status-msg');
+            menuBox.innerHTML = '';
+            statusMsg.style.display = 'none';
+
+            const filteredItems = allItems.filter(item => {
+                const isAvailable = String(item.available).toLowerCase() === 'yes';
+                const matchesBrand = (filter === 'All' || item.brand === filter);
+                return isAvailable && matchesBrand;
+            });
+
+            if (filteredItems.length === 0) {
+                statusMsg.style.display = 'block';
+                statusMsg.innerText = "No items available for this selection.";
+                return;
+            }
+
+            filteredItems.forEach(item => {
+                menuBox.innerHTML += `
+                    <div class="menu-card">
+                        <img src="${item.img || 'https://via.placeholder.com/260x180'}" onerror="this.src='https://via.placeholder.com/260x180'">
+                        <div class="info">
+                            <div class="brand-tag">${item.brand}</div>
+                            <h3>${item.name}</h3>
+                            <div class="price">₹${item.price}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.onload = loadData;
     </script>
 </body>
 </html>
