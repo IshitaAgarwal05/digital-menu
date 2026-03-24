@@ -78,7 +78,7 @@
         .checkout-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 1.1em; font-weight: bold; color: white; cursor: pointer; margin-top: 15px; }
         .btn-wa { background: #25D366; } .btn-print { background: var(--glacier-blue); } .btn-clear { background: #ff9f43; color: white; } .close-cart { background: #ff4757; }
 
-        /* --- PDF & PRINT LAYOUT FIX --- */
+        /* --- PDF & PRINT LAYOUT MAGIC (ULTRA COMPACT DESIGN) --- */
         @media print {
             @page { margin: 5mm; size: A4 portrait; }
             body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: #fff; }
@@ -102,20 +102,13 @@
             }
             body.print-menu .menu-card img { height: 80px !important; padding: 4px !important; border-bottom: none !important; width: 100% !important; object-fit: contain !important; }
             
-            /* THE FIX: Force content to stick to the top, removing the gap before price */
             body.print-menu .info { 
-                padding: 4px 4px 6px 4px !important; 
-                display: flex !important; 
-                flex-direction: column !important; 
-                justify-content: flex-start !important; /* Forces items upwards */
-                align-items: center !important; 
-                flex-grow: 1 !important;
+                padding: 4px 4px 6px 4px !important; display: flex !important; 
+                flex-direction: column !important; justify-content: flex-start !important; 
+                align-items: center !important; flex-grow: 1 !important;
             }
             body.print-menu .brand-badge { font-size: 5.5pt !important; padding: 2px 4px !important; margin: 0 0 3px 0 !important; }
-            body.print-menu .item-name { 
-                font-size: 8.5pt !important; line-height: 1.1 !important; margin: 0 0 3px 0 !important; 
-                min-height: 0 !important; text-align: center !important; width: 100% !important;
-            }
+            body.print-menu .item-name { font-size: 8.5pt !important; line-height: 1.1 !important; margin: 0 0 3px 0 !important; min-height: 0 !important; text-align: center !important; width: 100% !important; }
             body.print-menu .price-cart-row { margin: 0 !important; padding: 0 !important; display: block !important; text-align: center !important; }
             body.print-menu .price { font-size: 11pt !important; margin: 0 !important; line-height: 1 !important; display: inline-block !important; }
 
@@ -146,7 +139,7 @@
     </div>
 
     <div class="filter-container" id="category-filter-box" style="margin-top: -10px;">
-        <button class="filter-btn category-btn active" onclick="setCategory('All', this)">All Categories</button>
+        <button class="filter-btn category-btn active" id="btn-cat-all" onclick="setCategory('All', this)">All Categories</button>
     </div>
 
     <div class="search-sort-container">
@@ -187,7 +180,9 @@
         
         let allItems = [];
         let currentBrand = 'All';
-        let currentCategory = 'All'; 
+        
+        // NEW: Ab category ek array ban chuki hai multi-select ke liye
+        let selectedCategories = []; 
         let cart = {}; 
 
         async function loadData() {
@@ -249,10 +244,36 @@
             applyFilters();
         }
 
+        // NEW MULTI-SELECT CATEGORY LOGIC
         function setCategory(category, btnElement) {
-            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
-            currentCategory = category;
+            const allBtn = document.getElementById('btn-cat-all');
+            
+            if (category === 'All') {
+                // Clear selected categories
+                selectedCategories = [];
+                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                allBtn.classList.add('active');
+            } else {
+                // Remove active class from 'All'
+                allBtn.classList.remove('active');
+                
+                // Toggle logc
+                const index = selectedCategories.indexOf(category);
+                if (index > -1) {
+                    // Already selected, so unselect it
+                    selectedCategories.splice(index, 1);
+                    btnElement.classList.remove('active');
+                } else {
+                    // Not selected, so select it
+                    selectedCategories.push(category);
+                    btnElement.classList.add('active');
+                }
+
+                // If user deselected everything, revert to 'All'
+                if (selectedCategories.length === 0) {
+                    allBtn.classList.add('active');
+                }
+            }
             applyFilters();
         }
 
@@ -279,7 +300,10 @@
                 const isAvailable = String(item.available).toLowerCase() === 'yes' || item.available === true;
                 const matchesBrand = (currentBrand === 'All' || item.brand === currentBrand);
                 const itemCat = item.category || 'More Favorites';
-                const matchesCategory = (currentCategory === 'All' || itemCat === currentCategory);
+                
+                // MULTI-CATEGORY CHECK: True if array is empty ('All') OR if category exists in selected array
+                const matchesCategory = (selectedCategories.length === 0 || selectedCategories.includes(itemCat));
+                
                 const matchesSearch = item.name.toLowerCase().includes(searchTerm);
                 
                 return isAvailable && matchesBrand && matchesCategory && matchesSearch;
