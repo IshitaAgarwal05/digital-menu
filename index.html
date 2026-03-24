@@ -80,37 +80,33 @@
         .checkout-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 1.1em; font-weight: bold; color: white; cursor: pointer; margin-top: 15px; }
         .btn-wa { background: #25D366; } .btn-print { background: var(--glacier-blue); } .btn-clear { background: #ff9f43; color: white; } .close-cart { background: #ff4757; }
 
-        /* --- SMART PDF & PRINT LAYOUT MAGIC (SINGLE A4 PAGE DESIGN) --- */
+        /* --- SMART PDF & PRINT LAYOUT MAGIC (IPHONE SAFE DESIGN) --- */
         @media print {
-            /* 1. Page Settings (A4 Portrait, Minimum Margins) */
             @page { margin: 5mm; size: A4 portrait; }
             body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: #fff; }
             
-            /* Hide UI Elements */
             #filter-box, .search-sort-container, #floating-cart, .add-btn, #status-msg, .qty-btn { display: none !important; }
 
-            /* 2. Compact Header */
             body.print-menu header { box-shadow: none; border-bottom: 3px solid var(--primary-color); padding: 5px 0 10px 0; text-align: center; margin-bottom: 10px; }
             body.print-menu header h1 { font-size: 24pt; margin: 0; color: var(--glacier-blue); }
             body.print-menu header p { font-size: 10pt; margin: 2px 0 0; }
             
-            /* 3. Category Headings (Smaller & Tighter) */
-            body.print-menu .category-section { margin-bottom: 15px; page-break-inside: avoid; }
-            body.print-menu .category-title { font-size: 16pt !important; margin: 5px 0 10px 0 !important; padding-bottom: 2px !important; border-bottom: 2px solid var(--primary-color) !important; color: var(--glacier-blue) !important; }
+            body.print-menu .category-section { margin-bottom: 15px; page-break-inside: avoid; clear: both; }
+            body.print-menu .category-title { font-size: 16pt !important; margin: 5px 0 10px 0 !important; padding-bottom: 2px !important; border-bottom: 2px solid var(--primary-color) !important; color: var(--glacier-blue) !important; display: block; }
             
-            /* 4. Ultra Compact 4-Column Grid */
-            body.print-menu .menu-container { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 8px !important; padding: 0 !important; }
+            /* IPHONE FIX: Changed from Grid to Flexbox for stable printing */
+            body.print-menu .menu-container { display: flex !important; flex-wrap: wrap !important; justify-content: flex-start !important; gap: 0 !important; padding: 0 !important; }
             
-            /* 5. Mini Cards to fit everything on one page */
-            body.print-menu .menu-card { width: auto !important; margin: 0 !important; box-shadow: none !important; border: 1px solid #ddd !important; border-radius: 8px !important; background: #fff !important; }
-            body.print-menu .menu-card img { height: 85px !important; padding: 4px !important; border-bottom: none !important; }
+            /* 4 Items per row mathematically fixed */
+            body.print-menu .menu-card { width: 23% !important; margin: 0 1% 10px 1% !important; box-shadow: none !important; border: 1px solid #ddd !important; border-radius: 8px !important; background: #fff !important; box-sizing: border-box !important; page-break-inside: avoid; }
+            body.print-menu .menu-card img { height: 85px !important; padding: 4px !important; border-bottom: none !important; width: 100% !important; object-fit: contain !important; }
             
             body.print-menu .info { padding: 6px !important; text-align: center !important; }
             body.print-menu .brand-badge { font-size: 6pt !important; padding: 2px 6px !important; margin-bottom: 4px !important; }
             body.print-menu .item-name { font-size: 9pt !important; line-height: 1.1 !important; margin-bottom: 2px !important; min-height: 25px !important; }
             body.print-menu .price { font-size: 11pt !important; margin-top: 2px !important; }
 
-            /* 6. Cart Bill Design (Receipt Style) */
+            /* Cart Print Styling */
             body.print-cart header, body.print-cart .menu-wrapper { display: none !important; }
             body.print-cart #cart-modal { display: block !important; position: static; background: none; }
             body.print-cart .cart-content { width: 100%; box-shadow: none; max-width: none; padding: 0; }
@@ -167,6 +163,7 @@
         // Apps Script URL
         const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyZ6aCMNqwXN2CuSbcIDWDSkbgQ3ZMW6EVfux8fMVkApWpDVREnkKdtWrKj0YgSBSw/exec"; 
         
+        // आपका WhatsApp Number (India code 91 के साथ)
         const WHATSAPP_NUMBER = "919829610570"; 
         
         let allItems = [];
@@ -344,22 +341,28 @@
             else document.getElementById('checkout-wa').style.display = 'none';
         }
 
+        // --- IPHONE FIX: Better Print Cleanup ---
+        window.addEventListener('afterprint', () => {
+            document.body.className = '';
+        });
+
         function downloadMenuPDF() {
             document.body.className = 'print-menu';
+            document.body.offsetHeight; // Force reflow
             setTimeout(() => {
                 window.print();
-                setTimeout(() => { document.body.className = ''; }, 1000);
-            }, 300);
+            }, 500);
         }
 
         function checkout(method) {
             if(Object.keys(cart).length === 0) { alert("Please add some items to your cart first!"); return; }
+            
             if(method === 'print') {
                 document.body.className = 'print-cart';
+                document.body.offsetHeight; // Force reflow
                 setTimeout(() => {
                     window.print();
-                    setTimeout(() => { document.body.className = ''; }, 1000);
-                }, 300);
+                }, 500);
             } 
             else if (method === 'whatsapp') {
                 let message = "Hello Glacier Ice Cream!🍦\n\n*New Order:*\n";
