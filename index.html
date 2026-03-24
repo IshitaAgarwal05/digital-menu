@@ -38,7 +38,8 @@
         .sidebar::-webkit-scrollbar { display: none; }
         
         .cat-item { display: flex; flex-direction: column; align-items: center; padding: 0 8px; cursor: pointer; transition: 0.2s; min-width: 65px; }
-        .cat-icon { font-size: 2em; margin-bottom: 8px; background: #f8f9fa; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: 0.2s; }
+        /* Added overflow:hidden so custom images fit perfectly inside the circle */
+        .cat-icon { font-size: 2em; margin-bottom: 8px; background: #f8f9fa; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: 0.2s; overflow: hidden; }
         .cat-name { font-size: 0.65em; font-weight: 500; color: #666; text-align: center; padding-bottom: 8px; border-bottom: 3px solid transparent; line-height: 1.1; transition: 0.2s; }
 
         .cat-item.active .cat-icon { border-color: var(--glacier-blue); background: #eef3ff; }
@@ -75,7 +76,6 @@
         .card-img-wrapper { position: relative; background: #f9f9f9; border-radius: 8px; height: 110px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
         .card-img-wrapper img { width: 85%; height: 85%; object-fit: contain; mix-blend-mode: multiply; }
         
-        /* NEW: BESTSELLER TAG */
         .bestseller-badge { position: absolute; top: 0; left: 0; background: linear-gradient(135deg, #1f51c6, #3a7bd5); color: white; font-size: 0.6em; font-weight: 800; padding: 4px 8px; border-radius: 8px 0 8px 0; z-index: 3; display: flex; align-items: center; gap: 3px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); text-transform: uppercase; letter-spacing: 0.5px; }
 
         .btn-container { position: absolute; right: 5px; bottom: -14px; z-index: 4; display: flex; justify-content: flex-end; }
@@ -221,7 +221,6 @@
                 </h2>
                 
                 <div id="menu-grid-wrapper"></div>
-                
             </div>
         </main>
     </div>
@@ -247,7 +246,6 @@
     </div>
 
     <script>
-        // NEW APPS SCRIPT URL
         const googleSheetUrl = "https://script.google.com/macros/s/AKfycbxksXza8xdjpOGrO5DQPEqocsvAJDF51CtWIH9kGMXwKOnYbGpfirVOGM6D7kXC5Ko/exec"; 
         const WHATSAPP_NUMBER = "919829610570"; 
         
@@ -255,6 +253,7 @@
         let currentBrand = 'All';
         let selectedCategories = []; 
         let cart = {}; 
+        let isPrintingPDF = false; // Flag to handle PDF printing logic
 
         async function loadData() {
             const statusMsg = document.getElementById('status-msg');
@@ -283,32 +282,48 @@
             }
         }
 
-        function getCategoryIcon(cat) {
-            const lCat = cat.toLowerCase();
-            if(lCat.includes('cone')) return '🍦';
-            if(lCat.includes('stick') || lCat.includes('bar') || lCat.includes('candy')) return '🍡';
-            if(lCat.includes('tub') || lCat.includes('pack')) return '🪣';
-            if(lCat.includes('cake') || lCat.includes('slice') || lCat.includes('roll')) return '🍰';
-            if(lCat.includes('cup') || lCat.includes('sundae')) return '🍨';
-            if(lCat.includes('rock')) return '🪨';
-            return '🍧'; 
-        }
-
         function setupAppUI() {
             const sidebar = document.getElementById('category-sidebar');
-            const categories = ['All', ...new Set(allItems.map(item => item.category || 'More Favorites').filter(c => c))];
+            
+            // First tab is specifically Bestsellers
+            const categories = ['Bestsellers', ...new Set(allItems.map(item => item.category || 'More Favorites').filter(c => c))];
             
             categories.forEach(cat => {
-                const icon = cat === 'All' ? '⭐' : getCategoryIcon(cat);
-                const name = cat === 'All' ? 'Best Sellers' : cat;
+                let iconHTML = '';
+                let name = cat;
+                
+                if (cat === 'Bestsellers') {
+                    iconHTML = '⭐';
+                    name = 'Best Sellers';
+                } else {
+                    const lCat = cat.toLowerCase();
+                    // NEW: CUSTOM IMAGE ICONS
+                    if(lCat.includes('family') || lCat.includes('pack')) {
+                        iconHTML = `<img src="https://i.postimg.cc/kG8QycWy/hm-pp-vanilla-700.jpg" style="width:100%; height:100%; object-fit:cover;">`;
+                    } else if(lCat.includes('tub')) {
+                        iconHTML = `<img src="https://i.postimg.cc/xdWm3qP3/md_tub_french_vanilla.png" style="width:100%; height:100%; object-fit:cover;">`;
+                    } else if(lCat.includes('cone')) {
+                        iconHTML = '🍦';
+                    } else if(lCat.includes('stick') || lCat.includes('bar') || lCat.includes('candy')) {
+                        iconHTML = '🍡';
+                    } else if(lCat.includes('cake') || lCat.includes('slice') || lCat.includes('roll')) {
+                        iconHTML = '🍰';
+                    } else if(lCat.includes('cup') || lCat.includes('sundae')) {
+                        iconHTML = '🍨';
+                    } else if(lCat.includes('rock')) {
+                        iconHTML = '🪨';
+                    } else {
+                        iconHTML = '🍧'; 
+                    }
+                }
                 
                 const div = document.createElement('div');
-                div.className = `cat-item ${cat === 'All' ? 'active' : ''}`;
-                if(cat === 'All') div.id = 'btn-cat-all'; 
+                div.className = `cat-item ${cat === 'Bestsellers' ? 'active' : ''}`;
+                if(cat === 'Bestsellers') div.id = 'btn-cat-all'; 
                 
                 div.onclick = () => setCategory(cat, div);
                 div.innerHTML = `
-                    <div class="cat-icon">${icon}</div>
+                    <div class="cat-icon">${iconHTML}</div>
                     <div class="cat-name">${name}</div>
                 `;
                 sidebar.appendChild(div);
@@ -327,7 +342,8 @@
 
         function setCategory(category, element) {
             const allBtn = document.getElementById('btn-cat-all');
-            if (category === 'All') {
+            
+            if (category === 'Bestsellers') {
                 selectedCategories = [];
                 document.querySelectorAll('.cat-item').forEach(btn => btn.classList.remove('active'));
                 allBtn.classList.add('active');
@@ -341,6 +357,7 @@
                     selectedCategories.push(category);
                     element.classList.add('active');
                 }
+                // Default back to bestsellers if nothing is selected
                 if (selectedCategories.length === 0) {
                     allBtn.classList.add('active');
                 }
@@ -384,11 +401,34 @@
             const searchTerm = document.getElementById('search-bar').value.toLowerCase();
             const sortValue = document.getElementById('sort-dropdown').value;
 
+            // Fail-safe: check if ANY item has been marked as bestseller
+            const hasBestsellers = allItems.some(i => i.bestseller && String(i.bestseller).toLowerCase() === 'yes');
+
             let filteredItems = allItems.filter(item => {
                 const isAvailable = String(item.available).toLowerCase() === 'yes' || item.available === true;
                 const matchesBrand = (currentBrand === 'All' || item.brand === currentBrand);
                 const itemCat = item.category || 'More Favorites';
-                const matchesCategory = (selectedCategories.length === 0 || selectedCategories.includes(itemCat));
+                
+                let matchesCategory = false;
+                
+                // NEW: STRICT BESTSELLER FILTERING
+                if (selectedCategories.length === 0 || selectedCategories.includes('Bestsellers')) {
+                    if (isPrintingPDF) {
+                        matchesCategory = true; // For PDF, we want to print everything
+                    } else {
+                        let isBestseller = (item.bestseller && String(item.bestseller).toLowerCase() === 'yes');
+                        // If user forgot to add 'Yes' in sheet, show all to prevent empty screen
+                        matchesCategory = hasBestsellers ? isBestseller : true; 
+                    }
+                } else {
+                    matchesCategory = selectedCategories.includes(itemCat);
+                }
+
+                // If user is searching, let them search the entire menu, overriding the category filter
+                if (searchTerm.trim() !== '') {
+                    matchesCategory = true; 
+                }
+                
                 const matchesSearch = item.name.toLowerCase().includes(searchTerm);
                 
                 return isAvailable && matchesBrand && matchesCategory && matchesSearch;
@@ -399,6 +439,12 @@
             else if (sortValue === 'vol-low-high') filteredItems.sort((a, b) => getVolume(a.name) - getVolume(b.name));
             else if (sortValue === 'vol-high-low') filteredItems.sort((a, b) => getVolume(b.name) - getVolume(a.name));
 
+            // Adjust Title based on selection
+            let displayTitle = selectedCategories.length === 0 ? 'Best Sellers' : currentCategory;
+            if (searchTerm.trim() !== '') displayTitle = 'Search Results';
+            if (isPrintingPDF) displayTitle = 'Complete Menu';
+            
+            document.getElementById('current-category-title').firstElementChild.innerText = displayTitle;
             itemCountStr.innerText = `${filteredItems.length} items`;
 
             if (filteredItems.length === 0) {
@@ -411,7 +457,8 @@
 
             const groupedItems = {};
             filteredItems.forEach(item => {
-                const cat = item.category || 'More Favorites';
+                // If viewing bestsellers, group them in a single "Top Picks" section for clean UI
+                const cat = (selectedCategories.length === 0 && !isPrintingPDF && searchTerm === '') ? 'Top Picks' : (item.category || 'More Favorites');
                 if (!groupedItems[cat]) groupedItems[cat] = [];
                 groupedItems[cat].push(item);
             });
@@ -436,7 +483,6 @@
                     else if(b.includes('london')) badgeClass = 'badge-london-dairy';
                     else if(b.includes('baskin')) badgeClass = 'badge-baskin-robbins';
 
-                    // Discount Pricing Logic
                     let priceHTML = '';
                     let mrp = parseFloat(item.mrp);
                     let price = parseFloat(item.price);
@@ -459,7 +505,6 @@
                         `;
                     }
 
-                    // BESTSELLER LOGIC
                     let isBestseller = (item.bestseller && String(item.bestseller).toLowerCase() === 'yes') ? true : false;
                     let bestsellerHTML = isBestseller ? `<div class="bestseller-badge">⭐ Bestseller</div>` : '';
 
@@ -503,7 +548,7 @@
                 });
 
                 if (productsArea.scrollTop < 20) {
-                    currentCatName = 'All'; 
+                    currentCatName = 'Bestsellers'; 
                 } else if (!currentCatName && sections.length > 0) {
                     currentCatName = sections[0].querySelector('.category-title').innerText;
                 }
@@ -513,7 +558,7 @@
                     if (!nameDiv) return;
                     
                     let isMatch = false;
-                    if (currentCatName === 'All') {
+                    if (currentCatName === 'Bestsellers' || currentCatName === 'Top Picks') {
                         isMatch = el.id === 'btn-cat-all';
                     } else {
                         isMatch = nameDiv.innerText.trim().toUpperCase() === currentCatName.toUpperCase();
@@ -637,13 +682,21 @@
         window.addEventListener('afterprint', () => { document.body.className = ''; });
 
         function downloadMenuPDF() {
-            currentCategory = 'All';
+            isPrintingPDF = true;
+            selectedCategories = []; 
             currentBrand = 'All';
-            applyFilters();
+            document.querySelectorAll('.cat-item').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-cat-all').classList.add('active');
+            
+            applyFilters(); 
             
             document.body.className = 'print-menu';
             document.body.offsetHeight; 
-            setTimeout(() => { window.print(); }, 500);
+            setTimeout(() => { 
+                window.print(); 
+                isPrintingPDF = false; 
+                applyFilters(); 
+            }, 500);
         }
 
         function checkout(method) {
