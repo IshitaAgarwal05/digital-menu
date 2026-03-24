@@ -75,7 +75,10 @@
         .card-img-wrapper { position: relative; background: #f9f9f9; border-radius: 8px; height: 110px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
         .card-img-wrapper img { width: 85%; height: 85%; object-fit: contain; mix-blend-mode: multiply; }
         
-        .btn-container { position: absolute; right: 5px; bottom: -14px; z-index: 2; display: flex; justify-content: flex-end; }
+        /* NEW: BESTSELLER TAG */
+        .bestseller-badge { position: absolute; top: 0; left: 0; background: linear-gradient(135deg, #1f51c6, #3a7bd5); color: white; font-size: 0.6em; font-weight: 800; padding: 4px 8px; border-radius: 8px 0 8px 0; z-index: 3; display: flex; align-items: center; gap: 3px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .btn-container { position: absolute; right: 5px; bottom: -14px; z-index: 4; display: flex; justify-content: flex-end; }
         .app-add-btn { width: 32px; height: 32px; border-radius: 8px; background: #fff; color: var(--glacier-blue); border: 1px solid #e0e0e0; font-size: 1.2em; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.08); transition: 0.2s; }
         .app-add-btn:hover { background: #f4f7ff; border-color: var(--glacier-blue); }
         .app-qty-control { height: 32px; width: 75px; background: var(--glacier-blue); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; padding: 0 5px; box-shadow: 0 2px 6px rgba(31, 81, 198, 0.3); font-weight: 700; font-size: 0.9em; box-sizing: border-box; }
@@ -132,7 +135,7 @@
             @page { margin: 5mm; size: A4 portrait; }
             body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: #fff !important; height: auto !important; overflow: auto !important; display: block !important; }
             
-            .sidebar, .chips-container, #bottom-cart-banner, #loading-bar, .btn-container, .share-btn { display: none !important; }
+            .sidebar, .chips-container, #bottom-cart-banner, #loading-bar, .btn-container, .share-btn, .bestseller-badge { display: none !important; }
             .app-container { display: block !important; overflow: visible !important; }
             .main-content { overflow: visible !important; padding: 0 !important; background: #fff !important; }
             .products-area { padding: 0 !important; overflow: visible !important; }
@@ -244,8 +247,8 @@
     </div>
 
     <script>
-        // 🚨 UPDATED GOOGLE SCRIPT URL 🚨
-        const googleSheetUrl = "https://script.google.com/macros/s/AKfycbzVPpI651ke4C5eeMRHM8KaPAwpOzwGKAzT3JiQYlHz7XUYQOfpUocFDuPe23O1t5g/exec"; 
+        // NEW APPS SCRIPT URL
+        const googleSheetUrl = "https://script.google.com/macros/s/AKfycbxksXza8xdjpOGrO5DQPEqocsvAJDF51CtWIH9kGMXwKOnYbGpfirVOGM6D7kXC5Ko/exec"; 
         const WHATSAPP_NUMBER = "919829610570"; 
         
         let allItems = [];
@@ -433,6 +436,7 @@
                     else if(b.includes('london')) badgeClass = 'badge-london-dairy';
                     else if(b.includes('baskin')) badgeClass = 'badge-baskin-robbins';
 
+                    // Discount Pricing Logic
                     let priceHTML = '';
                     let mrp = parseFloat(item.mrp);
                     let price = parseFloat(item.price);
@@ -455,9 +459,14 @@
                         `;
                     }
 
+                    // BESTSELLER LOGIC
+                    let isBestseller = (item.bestseller && String(item.bestseller).toLowerCase() === 'yes') ? true : false;
+                    let bestsellerHTML = isBestseller ? `<div class="bestseller-badge">⭐ Bestseller</div>` : '';
+
                     newHTML += `
                         <div class="menu-card">
                             <div class="card-img-wrapper">
+                                ${bestsellerHTML}
                                 <img src="${item.img}" referrerpolicy="no-referrer" loading="lazy" onerror="this.src='https://via.placeholder.com/300x220?text=Ice+Cream'">
                                 <div class="btn-container" id="add-wrap-${safeName}"></div>
                             </div>
