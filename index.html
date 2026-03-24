@@ -27,21 +27,27 @@
         .header-left h1 { margin: 0; font-family: 'Montserrat', sans-serif; font-size: 1.5em; color: var(--glacier-blue); text-transform: uppercase; letter-spacing: 1px; }
         .header-left p { margin: 2px 0 0; color: #777; font-size: 0.75em; font-weight: 500; }
         
-        /* NEW: Share Button CSS */
         .share-btn { background: #f0f4ff; color: var(--glacier-blue); border: 1px solid #d9e2fc; padding: 8px 14px; border-radius: 50px; font-weight: 700; font-size: 0.85em; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
         .share-btn:hover { background: var(--glacier-blue); color: white; }
 
-        /* --- MAIN APP LAYOUT (SIDEBAR + CONTENT) --- */
+        /* --- MAIN APP LAYOUT --- */
         .app-container { display: flex; flex: 1; overflow: hidden; background: #fff; }
         
         /* 1. Category Sidebar */
-        .sidebar { width: 85px; background: var(--sidebar-bg); border-right: 1px solid #f0f0f0; overflow-y: auto; padding-bottom: 80px; scrollbar-width: none; }
+        .sidebar { width: 85px; background: var(--sidebar-bg); border-right: 1px solid #f0f0f0; overflow-y: auto; padding-bottom: 80px; scrollbar-width: none; scroll-behavior: smooth; }
         .sidebar::-webkit-scrollbar { display: none; }
         .cat-item { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px 5px; cursor: pointer; border-left: 4px solid transparent; transition: 0.2s; text-align: center; border-bottom: 1px solid #f9f9f9; }
+        
+        /* Filter Selected State (Blue) */
         .cat-item.active { background: #eff3fa; border-left-color: var(--glacier-blue); }
+        .cat-item.active .cat-name { color: var(--glacier-blue); font-weight: 700; }
+
+        /* ScrollSpy Highlight State (Orange - Takes Priority) */
+        .cat-item.scroll-active { background: #fff0ec !important; border-left-color: var(--primary-color) !important; }
+        .cat-item.scroll-active .cat-name { color: var(--primary-color) !important; font-weight: 800; }
+
         .cat-icon { font-size: 1.8em; margin-bottom: 5px; }
         .cat-name { font-size: 0.65em; font-weight: 600; color: #555; line-height: 1.2; }
-        .cat-item.active .cat-name { color: var(--glacier-blue); font-weight: 700; }
 
         /* 2. Main Content Area */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f4f6f9; }
@@ -56,10 +62,14 @@
         .chip.pdf-chip { background: #8e44ad; color: white; border-color: #8e44ad; }
 
         /* Products Grid Area */
-        .products-area { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
+        .products-area { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 120px; scroll-behavior: smooth; }
         .section-header { font-size: 1.1em; font-weight: 700; color: #222; margin: 0 0 15px 0; display: flex; justify-content: space-between; align-items: center; }
         .section-count { font-size: 0.8em; font-weight: 500; color: #888; }
         
+        /* ScrollSpy Categories */
+        .category-section { margin-bottom: 40px; }
+        .category-title { font-family: 'Montserrat', sans-serif; font-size: 1.6em; color: var(--glacier-blue); text-transform: uppercase; border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 5px; margin: 10px 0 20px 0; letter-spacing: 1px; }
+
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
         
         /* --- PRODUCT CARD --- */
@@ -117,8 +127,10 @@
             body.print-menu .header-left { text-align: center; }
             body.print-menu .header-left h1 { font-size: 20pt !important; color: var(--glacier-blue) !important; }
             
-            body.print-menu .section-header { font-size: 14pt !important; margin: 5px 0 10px 0 !important; padding-bottom: 2px !important; border-bottom: 2px solid var(--primary-color) !important; color: var(--glacier-blue) !important; display: block !important; text-align: center; }
-            body.print-menu .section-count { display: none !important; }
+            body.print-menu .section-header, body.print-menu #status-msg { display: none !important; }
+            
+            body.print-menu .category-section { margin-bottom: 10px !important; page-break-inside: avoid !important; clear: both !important; }
+            body.print-menu .category-title { font-size: 14pt !important; margin: 5px 0 10px 0 !important; padding-bottom: 2px !important; border-bottom: 2px solid var(--primary-color) !important; color: var(--glacier-blue) !important; display: block !important; text-align: center; }
             
             body.print-menu .menu-grid { display: flex !important; flex-wrap: wrap !important; justify-content: flex-start !important; gap: 0 !important; }
             
@@ -141,7 +153,6 @@
             body.print-cart .checkout-btn { display: none !important; }
         }
 
-        /* Desktop specific tweaks */
         @media (min-width: 601px) {
             .sidebar { width: 120px; }
             .cat-icon { font-size: 2.2em; }
@@ -172,7 +183,6 @@
             </aside>
 
         <main class="main-content">
-            
             <div class="chips-container" id="chips-bar">
                 <div class="chip">
                     🔍 <input type="text" id="search-bar" class="chip-input" placeholder="Search..." onkeyup="applyFilters()">
@@ -187,16 +197,18 @@
                     </select>
                 </div>
                 <div class="chip pdf-chip" onclick="downloadMenuPDF()">📄 PDF</div>
-                </div>
+            </div>
 
             <div class="products-area" id="products-area">
                 <div id="status-msg">Stocking our freezer... Please wait!</div>
+                
                 <h2 class="section-header" id="current-category-title">
-                    <span>All Items</span>
+                    <span>Menu</span>
                     <span class="section-count" id="item-count">0 items</span>
                 </h2>
-                <div class="menu-grid" id="menu-grid">
-                    </div>
+                
+                <div id="menu-grid-wrapper"></div>
+                
             </div>
         </main>
     </div>
@@ -206,9 +218,7 @@
             <span class="banner-items" id="banner-qty">0 ITEMS</span>
             <span class="banner-price">₹<span id="banner-total">0</span></span>
         </div>
-        <div class="banner-right">
-            View Cart ➔
-        </div>
+        <div class="banner-right">View Cart ➔</div>
     </div>
 
     <div id="cart-modal">
@@ -229,7 +239,7 @@
         
         let allItems = [];
         let currentBrand = 'All';
-        let currentCategory = 'All'; 
+        let selectedCategories = []; 
         let cart = {}; 
 
         async function loadData() {
@@ -249,6 +259,7 @@
                 
                 setupAppUI();
                 applyFilters();
+                setupScrollSpy(); // NEW: Trigger ScrollSpy Setup
 
                 loadingBar.style.width = '100%';
                 setTimeout(() => { loadingBar.style.opacity = '0'; }, 500);
@@ -279,6 +290,8 @@
                 
                 const div = document.createElement('div');
                 div.className = `cat-item ${cat === 'All' ? 'active' : ''}`;
+                if(cat === 'All') div.id = 'btn-cat-all'; // Crucial for Logic
+                
                 div.onclick = () => setCategory(cat, div);
                 div.innerHTML = `
                     <div class="cat-icon">${icon}</div>
@@ -299,23 +312,34 @@
         }
 
         function setCategory(category, element) {
-            document.querySelectorAll('.cat-item').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
-            currentCategory = category;
-            document.getElementById('products-area').scrollTop = 0;
+            const allBtn = document.getElementById('btn-cat-all');
+            if (category === 'All') {
+                selectedCategories = [];
+                document.querySelectorAll('.cat-item').forEach(btn => btn.classList.remove('active'));
+                allBtn.classList.add('active');
+            } else {
+                allBtn.classList.remove('active');
+                const index = selectedCategories.indexOf(category);
+                if (index > -1) {
+                    selectedCategories.splice(index, 1);
+                    element.classList.remove('active');
+                } else {
+                    selectedCategories.push(category);
+                    element.classList.add('active');
+                }
+                if (selectedCategories.length === 0) {
+                    allBtn.classList.add('active');
+                }
+            }
+            document.getElementById('products-area').scrollTop = 0; // Reset scroll on filter
             applyFilters();
         }
 
         function setBrand(brand, element) {
             const isActive = element.classList.contains('active');
             document.querySelectorAll('.brand-chip').forEach(el => el.classList.remove('active'));
-            
-            if(isActive) {
-                currentBrand = 'All';
-            } else {
-                element.classList.add('active');
-                currentBrand = brand;
-            }
+            if(isActive) { currentBrand = 'All'; } 
+            else { element.classList.add('active'); currentBrand = brand; }
             applyFilters();
         }
 
@@ -339,9 +363,8 @@
         }
 
         function applyFilters() {
-            const menuGrid = document.getElementById('menu-grid');
+            const wrapper = document.getElementById('menu-grid-wrapper');
             const statusMsg = document.getElementById('status-msg');
-            const catTitle = document.getElementById('current-category-title');
             const itemCountStr = document.getElementById('item-count');
             
             const searchTerm = document.getElementById('search-bar').value.toLowerCase();
@@ -351,7 +374,7 @@
                 const isAvailable = String(item.available).toLowerCase() === 'yes' || item.available === true;
                 const matchesBrand = (currentBrand === 'All' || item.brand === currentBrand);
                 const itemCat = item.category || 'More Favorites';
-                const matchesCategory = (currentCategory === 'All' || itemCat === currentCategory);
+                const matchesCategory = (selectedCategories.length === 0 || selectedCategories.includes(itemCat));
                 const matchesSearch = item.name.toLowerCase().includes(searchTerm);
                 
                 return isAvailable && matchesBrand && matchesCategory && matchesSearch;
@@ -362,41 +385,115 @@
             else if (sortValue === 'vol-low-high') filteredItems.sort((a, b) => getVolume(a.name) - getVolume(b.name));
             else if (sortValue === 'vol-high-low') filteredItems.sort((a, b) => getVolume(b.name) - getVolume(a.name));
 
-            catTitle.firstElementChild.innerText = currentCategory === 'All' ? (currentBrand !== 'All' ? currentBrand : 'All Items') : currentCategory;
             itemCountStr.innerText = `${filteredItems.length} items`;
 
             if (filteredItems.length === 0) {
                 statusMsg.style.display = 'block';
-                statusMsg.innerText = "No items found matching your filters.";
-                menuGrid.innerHTML = '';
+                wrapper.innerHTML = '';
                 return;
             }
 
             statusMsg.style.display = 'none';
 
-            let newHTML = '';
+            // Group by Category to create sections for ScrollSpy
+            const groupedItems = {};
             filteredItems.forEach(item => {
-                const safeName = item.name.replace(/[^a-zA-Z0-9]/g, '_');
-                const volText = extractVolumeText(item.name);
-                let displayName = item.name.replace(volText, '').trim();
-                if(displayName === '') displayName = item.name;
-
-                newHTML += `
-                    <div class="menu-card">
-                        <div class="card-img-wrapper">
-                            <img src="${item.img}" referrerpolicy="no-referrer" loading="lazy" onerror="this.src='https://via.placeholder.com/300x220?text=Ice+Cream'">
-                            <div class="btn-container" id="add-wrap-${safeName}">
-                            </div>
-                        </div>
-                        <div class="brand-tag">${item.brand}</div>
-                        <div class="item-name">${displayName}</div>
-                        <div class="item-volume">${volText}</div>
-                        <div class="item-price">₹${item.price}</div>
-                    </div>
-                `;
+                const cat = item.category || 'More Favorites';
+                if (!groupedItems[cat]) groupedItems[cat] = [];
+                groupedItems[cat].push(item);
             });
-            menuGrid.innerHTML = newHTML;
+
+            let newHTML = '';
+            for (const [category, items] of Object.entries(groupedItems)) {
+                newHTML += `
+                    <div class="category-section">
+                        <h2 class="category-title">${category}</h2>
+                        <div class="menu-grid">
+                `;
+                
+                items.forEach(item => {
+                    const safeName = item.name.replace(/[^a-zA-Z0-9]/g, '_');
+                    const volText = extractVolumeText(item.name);
+                    let displayName = item.name.replace(volText, '').trim();
+                    if(displayName === '') displayName = item.name;
+
+                    let badgeClass = 'badge-default';
+                    const b = String(item.brand).toLowerCase();
+                    if(b.includes('mother')) badgeClass = 'badge-mother-dairy';
+                    else if(b.includes('london')) badgeClass = 'badge-london-dairy';
+                    else if(b.includes('baskin')) badgeClass = 'badge-baskin-robbins';
+
+                    newHTML += `
+                        <div class="menu-card">
+                            <div class="card-img-wrapper">
+                                <img src="${item.img}" referrerpolicy="no-referrer" loading="lazy" onerror="this.src='https://via.placeholder.com/300x220?text=Ice+Cream'">
+                                <div class="btn-container" id="add-wrap-${safeName}"></div>
+                            </div>
+                            <div class="brand-tag">${item.brand}</div>
+                            <div class="item-name">${displayName}</div>
+                            <div class="item-volume">${volText}</div>
+                            <div class="item-price">₹${item.price}</div>
+                        </div>
+                    `;
+                });
+                newHTML += `</div></div>`;
+            }
+            wrapper.innerHTML = newHTML;
             updateAddButtons();
+            
+            // Trigger scroll event to instantly calculate new ScrollSpy state
+            document.getElementById('products-area').dispatchEvent(new Event('scroll'));
+        }
+
+        // --- NEW: THE SCROLL SPY LOGIC ---
+        function setupScrollSpy() {
+            const productsArea = document.getElementById('products-area');
+            const sidebar = document.getElementById('category-sidebar');
+
+            productsArea.addEventListener('scroll', () => {
+                const sections = document.querySelectorAll('.category-section');
+                let currentCatName = '';
+                
+                // Track which section is near the top
+                sections.forEach(sec => {
+                    const rect = sec.getBoundingClientRect();
+                    // 180px matches header height + chips bar + padding roughly
+                    if (rect.top <= 180) {
+                        currentCatName = sec.querySelector('.category-title').innerText;
+                    }
+                });
+
+                // Top fallback
+                if (productsArea.scrollTop < 20) {
+                    currentCatName = 'All'; 
+                } else if (!currentCatName && sections.length > 0) {
+                    currentCatName = sections[0].querySelector('.category-title').innerText;
+                }
+
+                // Apply dynamic highlight to Sidebar
+                document.querySelectorAll('.cat-item').forEach(el => {
+                    const nameDiv = el.querySelector('.cat-name');
+                    if (!nameDiv) return;
+                    
+                    let isMatch = false;
+                    if (currentCatName === 'All') {
+                        isMatch = el.id === 'btn-cat-all';
+                    } else {
+                        isMatch = nameDiv.innerText.trim().toUpperCase() === currentCatName.toUpperCase();
+                    }
+
+                    if (isMatch) {
+                        el.classList.add('scroll-active');
+                        // Auto scroll the sidebar gracefully
+                        const elTop = el.offsetTop;
+                        if (elTop < sidebar.scrollTop || elTop > sidebar.scrollTop + sidebar.clientHeight - 80) {
+                            sidebar.scrollTo({ top: elTop - 20, behavior: 'smooth' });
+                        }
+                    } else {
+                        el.classList.remove('scroll-active');
+                    }
+                });
+            });
         }
 
         function updateAddButtons() {
@@ -484,27 +581,18 @@
 
         function clearCart() {
             if(Object.keys(cart).length === 0) return;
-            if(confirm("Are you sure you want to clear your cart?")) { 
-                cart = {}; 
-                updateCartUI(); 
-            }
+            if(confirm("Are you sure you want to clear your cart?")) { cart = {}; updateCartUI(); }
         }
 
-        // --- NEW: NATIVE SHARE LOGIC ---
         function shareWebsite() {
             const shareData = {
                 title: 'Glacier Ice Cream - Menu',
                 text: 'Checkout Glacier Ice Cream\'s live digital menu and order your favorite flavors online! 🍦',
                 url: window.location.href
             };
-
-            // Check if Web Share API is available (works on modern mobile browsers)
             if (navigator.share) {
-                navigator.share(shareData)
-                    .then(() => console.log('Link shared successfully'))
-                    .catch((error) => console.log('Error sharing:', error));
+                navigator.share(shareData).catch(err => console.log('Error sharing:', err));
             } else {
-                // Fallback for PC: Copy to clipboard or direct WhatsApp link
                 const waText = encodeURIComponent(shareData.text + "\n" + shareData.url);
                 window.open(`https://wa.me/?text=${waText}`, '_blank');
             }
