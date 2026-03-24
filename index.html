@@ -37,12 +37,19 @@
         .filter-btn:hover { transform: translateY(-2px); }
         .filter-btn.active { background: var(--glacier-blue); color: white; border-color: var(--glacier-blue); }
 
-        .search-sort-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; padding: 0 20px; flex-wrap: wrap; }
+        .search-sort-container { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 30px; padding: 0 20px; flex-wrap: wrap; }
         .search-input, .sort-select {
             padding: 12px 20px; border: 1px solid #ddd; border-radius: 50px; font-size: 1em; outline: none; transition: all 0.3s;
         }
         .search-input { width: 250px; }
         .search-input:focus, .sort-select:focus { border-color: var(--primary-color); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        /* New PDF Button Styling */
+        .pdf-btn { 
+            padding: 12px 25px; border: none; border-radius: 50px; background: #8e44ad; color: white; 
+            font-size: 1em; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.2); transition: 0.3s;
+        }
+        .pdf-btn:hover { background: #9b59b6; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(142, 68, 173, 0.3); }
 
         .menu-container { display: flex; flex-wrap: wrap; justify-content: center; padding: 10px; gap: 30px; min-height: 200px; padding-bottom: 100px; }
         
@@ -77,7 +84,7 @@
         
         #status-msg { margin-top: 60px; font-weight: 500; color: #888; font-size: 1.3em; }
 
-        /* --- CART & CHECKOUT STYLING --- */
+        /* --- CART STYLING --- */
         #floating-cart {
             position: fixed; bottom: 30px; right: 30px; background: var(--primary-color); color: white;
             padding: 15px 25px; border-radius: 50px; font-size: 1.2em; font-weight: bold; cursor: pointer;
@@ -95,7 +102,6 @@
         }
         .cart-content h2 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; color: var(--glacier-blue); }
         
-        /* New Cart Item Layout for Qty Controls */
         .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: 500; border-bottom: 1px dashed #eee; padding-bottom: 15px; }
         .cart-item-details { flex: 2; }
         .cart-item-controls { flex: 1; display: flex; justify-content: center; align-items: center; gap: 10px; }
@@ -112,17 +118,38 @@
         .btn-clear { background: #ff9f43; color: white; }
         .close-cart { background: #ff4757; }
         
+        /* --- SMART PDF & PRINT LAYOUT MAGIC --- */
         @media print {
-            body * { visibility: hidden; }
-            #cart-modal, #cart-modal * { visibility: visible; }
-            #cart-modal { background: none; position: absolute; left: 0; top: 0; align-items: flex-start; }
-            .cart-content { width: 100%; box-shadow: none; border: none; padding: 0; }
-            .checkout-btn, .qty-btn { display: none; } /* Hide buttons in print */
+            /* 1. If Printing MENU as PDF */
+            body.print-menu #filter-box, 
+            body.print-menu .search-sort-container, 
+            body.print-menu #floating-cart,
+            body.print-menu .add-btn,
+            body.print-menu #status-msg {
+                display: none !important;
+            }
+            body.print-menu { background: white; }
+            body.print-menu header { box-shadow: none; border-bottom: 2px solid #ddd; padding: 20px 0; }
+            body.print-menu .menu-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px 0; }
+            body.print-menu .menu-card { width: auto; box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; margin: 0; }
+
+            /* 2. If Printing CART BILL */
+            body.print-cart header, 
+            body.print-cart #filter-box, 
+            body.print-cart .search-sort-container, 
+            body.print-cart .menu-container, 
+            body.print-cart #floating-cart {
+                display: none !important;
+            }
+            body.print-cart #cart-modal { display: block !important; position: static; background: none; }
+            body.print-cart .cart-content { width: 100%; box-shadow: none; max-width: none; padding: 0; }
+            body.print-cart .checkout-btn, body.print-cart .qty-btn { display: none !important; }
         }
 
         @media (max-width: 600px) {
             header h1 { font-size: 2em; }
             .search-input, .sort-select { width: 100%; }
+            .pdf-btn { width: 100%; }
             #floating-cart { bottom: 20px; right: 20px; font-size: 1em; padding: 12px 20px; }
         }
     </style>
@@ -145,6 +172,7 @@
             <option value="low-high">Low to High</option>
             <option value="high-low">High to Low</option>
         </select>
+        <button class="pdf-btn" onclick="downloadMenuPDF()">📄 Export PDF Menu</button>
     </div>
 
     <div id="status-msg">Stocking our freezer... Please wait!</div>
@@ -155,8 +183,7 @@
     <div id="cart-modal">
         <div class="cart-content">
             <h2>Your Order</h2>
-            <div id="cart-items-list">
-                </div>
+            <div id="cart-items-list"></div>
             <div class="cart-total">Total: ₹<span id="cart-total-price">0</span></div>
             
             <button id="checkout-wa" class="checkout-btn btn-wa" onclick="checkout('whatsapp')">📱 Order on WhatsApp</button>
@@ -168,7 +195,7 @@
 
     <script>
         const googleSheetUrl = "https://script.google.com/macros/s/AKfycbwS8NLxa9SP6KP0IFqUyzMztpcO6q0BzvtDXA0_MasxkeKPPKSbUK8O0iEQdHDZXIE/exec"; 
-        const WHATSAPP_NUMBER = "91XXXXXXXXXX"; // <-- यहाँ अपना WhatsApp Number डालें 
+        const WHATSAPP_NUMBER = "91XXXXXXXXXX"; // Apna WhatsApp Number dalein
         
         let allItems = [];
         let currentBrand = 'All';
@@ -242,7 +269,6 @@
                 else if(b.includes('london')) badgeClass = 'badge-london-dairy';
                 else if(b.includes('baskin')) badgeClass = 'badge-baskin-robbins';
 
-                // Add to Cart now also passes the Brand Name
                 return `
                     <div class="menu-card">
                         <img src="${item.img}" referrerpolicy="no-referrer" loading="lazy" onerror="this.src='https://via.placeholder.com/300x220?text=Ice+Cream'">
@@ -263,13 +289,10 @@
             menuBox.innerHTML = newHTML;
         }
 
-        // --- UPDATED CART LOGIC (With Brand Name & Qty Controls) ---
+        // --- CART LOGIC ---
         function addToCart(name, price, brand) {
-            if(cart[name]) {
-                cart[name].qty += 1;
-            } else {
-                cart[name] = { price: price, qty: 1, brand: brand };
-            }
+            if(cart[name]) { cart[name].qty += 1; } 
+            else { cart[name] = { price: price, qty: 1, brand: brand }; }
             updateCartUI();
             
             const floatBtn = document.getElementById('floating-cart');
@@ -280,17 +303,14 @@
         function changeQty(name, delta) {
             if(cart[name]) {
                 cart[name].qty += delta;
-                if(cart[name].qty <= 0) {
-                    delete cart[name]; // Remove item if qty is 0
-                }
+                if(cart[name].qty <= 0) delete cart[name];
                 updateCartUI();
             }
         }
 
         function updateCartUI() {
             const cartList = document.getElementById('cart-items-list');
-            let totalQty = 0;
-            let totalPrice = 0;
+            let totalQty = 0; let totalPrice = 0;
             cartList.innerHTML = '';
 
             for (const [name, data] of Object.entries(cart)) {
@@ -298,7 +318,6 @@
                 const itemTotal = data.price * data.qty;
                 totalPrice += itemTotal;
 
-                // UI with Brand Name and +/- Buttons
                 cartList.innerHTML += `
                     <div class="cart-item">
                         <div class="cart-item-details">
@@ -315,10 +334,7 @@
                 `;
             }
 
-            if(totalQty === 0) {
-                cartList.innerHTML = '<p style="color:#888; text-align: center;">Your cart is empty. 🍦</p>';
-            }
-
+            if(totalQty === 0) cartList.innerHTML = '<p style="color:#888; text-align: center;">Your cart is empty. 🍦</p>';
             document.getElementById('cart-count').innerText = totalQty;
             document.getElementById('cart-total-price').innerText = totalPrice;
         }
@@ -331,18 +347,30 @@
         function clearCart() {
             if(Object.keys(cart).length === 0) return;
             if(confirm("Are you sure you want to clear your cart?")) {
-                cart = {}; 
-                updateCartUI(); 
+                cart = {}; updateCartUI(); 
             }
         }
 
         function setupSmartCheckout() {
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            if(isMobile) {
-                document.getElementById('checkout-print').style.display = 'none';
-            } else {
-                document.getElementById('checkout-wa').style.display = 'none';
-            }
+            if(isMobile) document.getElementById('checkout-print').style.display = 'none';
+            else document.getElementById('checkout-wa').style.display = 'none';
+        }
+
+        // --- EXPORT PDF & CHECKOUT LOGIC ---
+        function downloadMenuPDF() {
+            // 1. Body ko 'print-menu' class de taaki sirf menu dikhe
+            document.body.className = 'print-menu';
+            
+            // 2. Browser ka print dialog open karein
+            setTimeout(() => {
+                window.print();
+                
+                // 3. Print dialog close hone ke baad website ko wapas normal karein
+                setTimeout(() => {
+                    document.body.className = '';
+                }, 1000);
+            }, 300);
         }
 
         function checkout(method) {
@@ -352,14 +380,17 @@
             }
 
             if(method === 'print') {
-                window.print();
+                document.body.className = 'print-cart';
+                setTimeout(() => {
+                    window.print();
+                    setTimeout(() => { document.body.className = ''; }, 1000);
+                }, 300);
             } 
             else if (method === 'whatsapp') {
                 let message = "Hello Glacier Ice Cream!🍦\n\n*New Order:*\n";
                 let total = 0;
                 
                 for (const [name, data] of Object.entries(cart)) {
-                    // Added Brand Name in brackets [Brand Name] Item Name
                     message += `- ${data.qty}x [${data.brand}] ${name} (₹${data.price * data.qty})\n`;
                     total += (data.price * data.qty);
                 }
