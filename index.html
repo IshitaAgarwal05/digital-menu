@@ -16,6 +16,7 @@
             --bg-color: #f4f6f9;
             --card-bg: #ffffff;
             --discount-green: #1b9e43;
+            --discount-red: #e74c3c;
         }
 
         body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg-color); color: #333; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
@@ -23,12 +24,17 @@
         #loading-bar { position: fixed; top: 0; left: 0; height: 4px; background-color: var(--primary-color); width: 0%; z-index: 9999; transition: width 0.3s ease, opacity 0.5s ease; box-shadow: 0 2px 5px rgba(228, 77, 38, 0.5); }
 
         /* --- APP HEADER --- */
-        header { background: #fff; padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); flex-shrink: 0;}
-        .header-left h1 { margin: 0; font-family: 'Montserrat', sans-serif; font-size: 1.5em; color: var(--glacier-blue); text-transform: uppercase; letter-spacing: 1px; }
-        .header-left p { margin: 2px 0 0; color: #777; font-size: 0.75em; font-weight: 500; }
+        header { background: #fff; padding: 12px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); flex-shrink: 0;}
+        .header-left h1 { margin: 0; font-family: 'Montserrat', sans-serif; font-size: 1.3em; color: var(--glacier-blue); text-transform: uppercase; letter-spacing: 1px; }
+        .header-left p { margin: 2px 0 0; color: #777; font-size: 0.7em; font-weight: 500; }
         
-        .share-btn { background: #f0f4ff; color: var(--glacier-blue); border: 1px solid #d9e2fc; padding: 8px 14px; border-radius: 50px; font-weight: 700; font-size: 0.85em; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
-        .share-btn:hover { background: var(--glacier-blue); color: white; }
+        /* HEADER BUTTONS (PDF & Share) */
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+        .action-btn { font-family: 'Poppins', sans-serif; border: 1px solid #d9e2fc; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.75em; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
+        .btn-share { background: #f0f4ff; color: var(--glacier-blue); }
+        .btn-share:hover { background: var(--glacier-blue); color: white; }
+        .btn-pdf { background: #8e44ad; color: white; border-color: #8e44ad; }
+        .btn-pdf:hover { background: #732d91; }
 
         /* --- MAIN APP LAYOUT --- */
         .app-container { display: flex; flex-direction: column; flex: 1; overflow: hidden; background: #fff; }
@@ -39,7 +45,7 @@
         
         .cat-item { display: flex; flex-direction: column; align-items: center; padding: 0 8px; cursor: pointer; transition: 0.2s; min-width: 65px; }
         .cat-icon { font-size: 2em; margin-bottom: 8px; background: #f8f9fa; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: 0.2s; overflow: hidden; }
-        .cat-name { font-size: 0.65em; font-weight: 500; color: #666; text-align: center; padding-bottom: 8px; border-bottom: 3px solid transparent; line-height: 1.1; transition: 0.2s; }
+        .cat-name { font-size: 0.65em; font-weight: 500; color: #666; text-align: center; padding-bottom: 8px; border-bottom: 3px solid transparent; line-height: 1.1; transition: 0.2s; white-space: nowrap; }
 
         .cat-item.active .cat-icon { border-color: var(--glacier-blue); background: #eef3ff; }
         .cat-item.active .cat-name { color: var(--glacier-blue); font-weight: 700; border-bottom-color: var(--glacier-blue); }
@@ -49,14 +55,15 @@
         /* 2. Main Content Area */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f4f6f9; }
         
-        /* Filter Chips */
+        /* Filter Chips Area */
         .chips-container { display: flex; overflow-x: auto; gap: 10px; padding: 12px 15px; background: #fff; border-bottom: 1px solid #eee; scrollbar-width: none; white-space: nowrap; flex-shrink: 0; }
         .chips-container::-webkit-scrollbar { display: none; }
         .chip { padding: 8px 16px; border: 1px solid #e0e0e0; border-radius: 50px; background: #fff; font-size: 0.8em; font-weight: 600; color: #444; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .chip.active { background: #eff3fa; border-color: var(--glacier-blue); color: var(--glacier-blue); }
         .chip-input { border: none; outline: none; background: transparent; font-family: inherit; font-size: 1em; width: 120px; color: #333; }
         .chip-select { border: none; outline: none; background: transparent; font-family: inherit; font-size: 1em; font-weight: 600; color: #444; cursor: pointer; }
-        .chip.pdf-chip { background: #8e44ad; color: white; border-color: #8e44ad; }
+        
+        /* Active Brand Chip highlight */
+        .brand-dropdown-chip.active { background: #eef3ff; border-color: var(--glacier-blue); color: var(--glacier-blue); }
 
         /* Products Scrolling Area */
         .products-area { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 120px; scroll-behavior: smooth; }
@@ -75,11 +82,14 @@
         .card-img-wrapper { position: relative; background: #f9f9f9; border-radius: 8px; height: 110px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
         .card-img-wrapper img { width: 85%; height: 85%; object-fit: contain; mix-blend-mode: multiply; }
         
-        .bestseller-badge { position: absolute; top: 0; left: 0; background: linear-gradient(135deg, #1f51c6, #3a7bd5); color: white; font-size: 0.6em; font-weight: 800; padding: 4px 8px; border-radius: 8px 0 8px 0; z-index: 3; display: flex; align-items: center; gap: 3px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); text-transform: uppercase; letter-spacing: 0.5px; }
+        /* BADGES */
+        .bestseller-badge { position: absolute; top: 0; left: 0; background: linear-gradient(135deg, #1f51c6, #3a7bd5); color: white; font-size: 0.55em; font-weight: 800; padding: 4px 8px; border-radius: 8px 0 8px 0; z-index: 3; display: flex; align-items: center; gap: 3px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* EXTRA RED DISCOUNT ICON */
+        .red-discount-icon { position: absolute; top: 0; right: 0; background: var(--discount-red); color: white; font-size: 0.6em; font-weight: 800; padding: 4px 6px; border-radius: 0 8px 0 8px; z-index: 3; display: flex; align-items: center; gap: 2px; box-shadow: -2px 2px 5px rgba(0,0,0,0.1); }
 
         .btn-container { position: absolute; right: 5px; bottom: -14px; z-index: 4; display: flex; justify-content: flex-end; }
         .app-add-btn { width: 32px; height: 32px; border-radius: 8px; background: #fff; color: var(--glacier-blue); border: 1px solid #e0e0e0; font-size: 1.2em; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.08); transition: 0.2s; }
-        .app-add-btn:hover { background: #f4f7ff; border-color: var(--glacier-blue); }
         .app-qty-control { height: 32px; width: 75px; background: var(--glacier-blue); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; padding: 0 5px; box-shadow: 0 2px 6px rgba(31, 81, 198, 0.3); font-weight: 700; font-size: 0.9em; box-sizing: border-box; }
         .app-qty-control button { background: none; border: none; color: white; font-weight: bold; font-size: 1.1em; cursor: pointer; padding: 0 5px; }
 
@@ -96,7 +106,7 @@
 
         #status-msg { margin-top: 50px; text-align: center; font-weight: 500; color: #888; font-size: 1em; }
 
-        /* --- STICKY BOTTOM CART BANNER --- */
+        /* --- BOTTOM CART BANNER --- */
         #bottom-cart-banner { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 500px; background: var(--glacier-blue); color: white; padding: 14px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; box-shadow: 0 5px 20px rgba(31, 81, 198, 0.4); z-index: 1000; cursor: pointer; transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-sizing: border-box; }
         #bottom-cart-banner.visible { bottom: 15px; }
         .banner-left { display: flex; flex-direction: column; }
@@ -104,10 +114,23 @@
         .banner-price { font-size: 1.2em; font-weight: 800; }
         .banner-right { font-size: 1em; display: flex; align-items: center; gap: 5px; }
 
-        /* CART MODAL */
-        #cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1001; justify-content: center; align-items: center; backdrop-filter: blur(3px); }
-        .cart-content { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; text-align: left; position: relative; }
-        .cart-content h2 { margin-top: 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; color: var(--glacier-blue); font-size: 1.3em; }
+        /* --- CART MODAL --- */
+        .custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: flex-end; backdrop-filter: blur(3px); }
+        .modal-content-box { background: white; padding: 25px; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px; max-height: 80vh; overflow-y: auto; box-sizing: border-box; animation: slideUp 0.3s ease-out; display: flex; flex-direction: column; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        /* BRAND MODAL SPECIFIC */
+        .brand-list { display: flex; flex-direction: column; gap: 12px; margin: 15px 0 25px 0; overflow-y: auto; }
+        .brand-label { display: flex; align-items: center; gap: 12px; font-size: 1.05em; font-weight: 500; cursor: pointer; padding: 5px 0; border-bottom: 1px solid #f4f4f4;}
+        .brand-label input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--glacier-blue); }
+        .modal-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; margin-bottom: 10px;}
+        .modal-header-row h2 { margin: 0; color: var(--glacier-blue); font-size: 1.3em; }
+        .close-modal-icon { font-size: 1.5em; color: #888; cursor: pointer; font-weight: bold; }
+        .btn-apply { background: var(--glacier-blue); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 1.1em; cursor: pointer; width: 100%; }
+
+        /* CART MODAL SPECIFIC */
+        #cart-modal { align-items: center; } /* Override flex-end for cart to keep it centered on PC, or let it be bottom sheet on mobile */
+        #cart-modal .modal-content-box { border-radius: 20px; width: 90%; margin-bottom: 20px; } /* Centered style */
         .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: 500; border-bottom: 1px dashed #eee; padding-bottom: 15px; }
         .cart-item-details { flex: 2; font-size: 0.9em; }
         .cart-item-controls { flex: 1; display: flex; justify-content: center; align-items: center; gap: 10px; }
@@ -115,63 +138,44 @@
         .qty-btn { background: #f0f0f0; border: none; width: 28px; height: 28px; border-radius: 6px; font-weight: bold; cursor: pointer; color: #333; }
         .cart-total { font-size: 1.3em; font-weight: 800; color: #222; text-align: right; margin-top: 20px; }
         .checkout-btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 1em; font-weight: bold; color: white; cursor: pointer; margin-top: 12px; }
-        .btn-wa { background: #25D366; } .btn-print { background: var(--glacier-blue); } .btn-clear { background: #ff9f43; color: white; } .close-cart { background: #ff4757; }
+        .btn-wa { background: #25D366; } .btn-print { background: var(--glacier-blue); } .btn-clear { background: #ff9f43; color: white; }
 
-        /* Desktop specific tweaks */
-        @media (min-width: 601px) {
-            .sidebar { justify-content: center; } 
-            .cat-item { min-width: 90px; }
-            .cat-icon { width: 80px; height: 80px; font-size: 2.5em; }
-            .cat-name { font-size: 0.8em; }
-            .menu-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-            .menu-card { padding: 12px; }
-            .card-img-wrapper { height: 140px; }
-            .item-name { font-size: 1em; }
+        @media (max-width: 600px) {
+            /* Make cart bottom sheet on mobile */
+            #cart-modal { align-items: flex-end; }
+            #cart-modal .modal-content-box { border-radius: 20px 20px 0 0; width: 100%; margin-bottom: 0; }
         }
 
-        /* --- PDF & PRINT LAYOUT MAGIC --- */
+        /* --- PDF & PRINT LAYOUT --- */
         @media print {
             @page { margin: 5mm; size: A4 portrait; }
             body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: #fff !important; height: auto !important; overflow: auto !important; display: block !important; }
-            
-            .sidebar, .chips-container, #bottom-cart-banner, #loading-bar, .btn-container, .share-btn, .bestseller-badge { display: none !important; }
+            .sidebar, .chips-container, #bottom-cart-banner, #loading-bar, .btn-container, .header-actions, .bestseller-badge, .red-discount-icon { display: none !important; }
             .app-container { display: block !important; overflow: visible !important; }
             .main-content { overflow: visible !important; padding: 0 !important; background: #fff !important; }
             .products-area { padding: 0 !important; overflow: visible !important; }
-
             body.print-menu header { box-shadow: none !important; border-bottom: 2px solid var(--primary-color) !important; padding: 0 0 5px 0 !important; justify-content: center !important; margin-bottom: 10px !important; }
             body.print-menu .header-left { text-align: center; }
             body.print-menu .header-left h1 { font-size: 20pt !important; color: var(--glacier-blue) !important; }
-            
             body.print-menu .section-header, body.print-menu #status-msg { display: none !important; }
-            
             body.print-menu .category-section { margin-bottom: 10px !important; page-break-inside: avoid !important; clear: both !important; }
             body.print-menu .category-title { font-size: 14pt !important; margin: 5px 0 10px 0 !important; padding-bottom: 2px !important; border-bottom: 2px solid var(--primary-color) !important; color: var(--glacier-blue) !important; display: block !important; text-align: center; }
-            
             body.print-menu .menu-grid { display: flex !important; flex-wrap: wrap !important; justify-content: flex-start !important; gap: 0 !important; }
-            
-            body.print-menu .menu-card { 
-                width: 23% !important; margin: 0 1% 10px 1% !important; box-shadow: none !important; 
-                border: 1px solid #ddd !important; border-radius: 6px !important; 
-                box-sizing: border-box !important; page-break-inside: avoid !important; padding: 4px !important;
-            }
+            body.print-menu .menu-card { width: 23% !important; margin: 0 1% 10px 1% !important; box-shadow: none !important; border: 1px solid #ddd !important; border-radius: 6px !important; box-sizing: border-box !important; page-break-inside: avoid !important; padding: 4px !important; }
             body.print-menu .card-img-wrapper { height: 75px !important; margin-bottom: 5px !important; background: transparent !important; }
             body.print-menu .card-img-wrapper img { width: 100% !important; height: 100% !important; object-fit: contain !important; }
-            
             body.print-menu .brand-tag { font-size: 5.5pt !important; text-align: center !important; margin-bottom: 2px !important; display: block !important; }
             body.print-menu .item-name { font-size: 8.5pt !important; text-align: center !important; min-height: 0 !important; margin-bottom: 2px !important; }
             body.print-menu .item-volume { display: none !important; }
-            
             body.print-menu .price-section { display: block !important; text-align: center !important; margin-top: 0 !important;}
             body.print-menu .price-row { display: block !important; text-align: center !important; }
             body.print-menu .item-price { font-size: 11pt !important; text-align: center !important; display: inline-block !important; margin-top: 2px !important; }
             body.print-menu .item-mrp { font-size: 8pt !important; }
             body.print-menu .discount-tag { display: none !important; }
-
             body.print-cart header, body.print-cart .app-container { display: none !important; }
             body.print-cart #cart-modal { display: block !important; position: static !important; background: none !important; }
-            body.print-cart .cart-content { width: 100% !important; box-shadow: none !important; max-width: none !important; padding: 0 !important; }
-            body.print-cart .checkout-btn { display: none !important; }
+            body.print-cart .modal-content-box { width: 100% !important; box-shadow: none !important; max-width: none !important; padding: 0 !important; }
+            body.print-cart .checkout-btn, body.print-cart .close-modal-icon { display: none !important; }
         }
     </style>
 </head>
@@ -184,9 +188,10 @@
             <h1>Glacier Ice Cream</h1>
             <p>Premium Brands • Real-Time Menu</p>
         </div>
-        <button class="share-btn" onclick="shareWebsite()">
-            <span style="font-size: 1.2em;">📤</span> Share
-        </button>
+        <div class="header-actions">
+            <button class="action-btn btn-pdf" onclick="downloadMenuPDF()">📄 PDF</button>
+            <button class="action-btn btn-share" onclick="shareWebsite()">📤 Share</button>
+        </div>
     </header>
 
     <div class="app-container">
@@ -197,18 +202,23 @@
         <main class="main-content">
             <div class="chips-container" id="chips-bar">
                 <div class="chip">
-                    🔍 <input type="text" id="search-bar" class="chip-input" placeholder="Search..." onkeyup="applyFilters()">
+                    🔍 <input type="text" id="search-bar" class="chip-input" placeholder="Search flavors..." onkeyup="applyFilters()">
                 </div>
+                
+                <div class="chip brand-dropdown-chip" id="brand-chip-btn" onclick="openBrandModal()">
+                    🏷️ Brands ▾
+                </div>
+
                 <div class="chip">
                     ↕️ <select id="sort-dropdown" class="chip-select" onchange="applyFilters()">
                         <option value="default">Sort by</option>
+                        <option value="disc-high-low">Discount: High - Low</option>
                         <option value="low-high">Price: Low - High</option>
                         <option value="high-low">Price: High - Low</option>
                         <option value="vol-low-high">Size: Small - Large</option>
                         <option value="vol-high-low">Size: Large - Small</option>
                     </select>
                 </div>
-                <div class="chip pdf-chip" onclick="downloadMenuPDF()">📄 PDF</div>
             </div>
 
             <div class="products-area" id="products-area">
@@ -220,7 +230,6 @@
                 </h2>
                 
                 <div id="menu-grid-wrapper"></div>
-                
             </div>
         </main>
     </div>
@@ -233,15 +242,29 @@
         <div class="banner-right">View Cart ➔</div>
     </div>
 
-    <div id="cart-modal">
-        <div class="cart-content">
-            <h2>Your Cart</h2>
+    <div id="brand-modal" class="custom-modal">
+        <div class="modal-content-box">
+            <div class="modal-header-row">
+                <h2>Select Brands</h2>
+                <div class="close-modal-icon" onclick="closeBrandModal()">×</div>
+            </div>
+            <div class="brand-list" id="brand-checkbox-list">
+                </div>
+            <button class="btn-apply" onclick="closeBrandModal()">Apply Filters</button>
+        </div>
+    </div>
+
+    <div id="cart-modal" class="custom-modal">
+        <div class="modal-content-box">
+            <div class="modal-header-row">
+                <h2>Your Cart</h2>
+                <div class="close-modal-icon" onclick="toggleCart()">×</div>
+            </div>
             <div id="cart-items-list"></div>
             <div class="cart-total">Total: ₹<span id="cart-total-price">0</span></div>
             <button id="checkout-wa" class="checkout-btn btn-wa" onclick="checkout('whatsapp')">📱 Order on WhatsApp</button>
             <button id="checkout-print" class="checkout-btn btn-print" onclick="checkout('print')">🖨️ Print Bill</button>
             <button class="checkout-btn btn-clear" onclick="clearCart()">🗑️ Clear Cart</button>
-            <button class="checkout-btn close-cart" onclick="toggleCart()">❌ Close</button>
         </div>
     </div>
 
@@ -250,10 +273,10 @@
         const WHATSAPP_NUMBER = "919829610570"; 
         
         let allItems = [];
-        let currentBrand = 'All';
         
-        // NEW: Ab sirf ek hi category select ho sakti hai
-        let currentCategory = 'Bestsellers'; 
+        // State variables
+        let currentCategory = 'All Items'; // DEFAULT TAB
+        let selectedBrands = []; // Array for multi-select brands
         let cart = {}; 
         let isPrintingPDF = false; 
 
@@ -286,78 +309,89 @@
 
         function setupAppUI() {
             const sidebar = document.getElementById('category-sidebar');
-            const categories = ['Bestsellers', ...new Set(allItems.map(item => item.category || 'More Favorites').filter(c => c))];
+            
+            // ORDER: Bestsellers -> All Items -> Rest of categories
+            const uniqueCats = [...new Set(allItems.map(item => item.category || 'More Favorites').filter(c => c))];
+            const categories = ['Bestsellers', 'All Items', ...uniqueCats];
             
             categories.forEach(cat => {
                 let iconHTML = '';
                 let name = cat;
                 
                 if (cat === 'Bestsellers') {
-                    iconHTML = '⭐';
-                    name = 'Best Sellers';
+                    iconHTML = '⭐'; name = 'Best Sellers';
+                } else if (cat === 'All Items') {
+                    iconHTML = '🍨'; name = 'All Items';
                 } else {
                     const lCat = cat.toLowerCase();
                     if(lCat.includes('family') || lCat.includes('pack')) {
                         iconHTML = `<img src="https://i.postimg.cc/kG8QycWy/hm-pp-vanilla-700.jpg" style="width:100%; height:100%; object-fit:cover;">`;
                     } else if(lCat.includes('tub')) {
                         iconHTML = `<img src="https://i.postimg.cc/xdWm3qP3/md_tub_french_vanilla.png" style="width:100%; height:100%; object-fit:cover;">`;
-                    } else if(lCat.includes('cone')) {
-                        iconHTML = '🍦';
-                    } else if(lCat.includes('stick') || lCat.includes('bar') || lCat.includes('candy')) {
-                        iconHTML = '🍡';
-                    } else if(lCat.includes('cake') || lCat.includes('slice') || lCat.includes('roll')) {
-                        iconHTML = '🍰';
-                    } else if(lCat.includes('cup') || lCat.includes('sundae')) {
-                        iconHTML = '🍨';
-                    } else if(lCat.includes('rock')) {
-                        iconHTML = '🪨';
-                    } else {
-                        iconHTML = '🍧'; 
-                    }
+                    } else if(lCat.includes('cone')) { iconHTML = '🍦'; } 
+                    else if(lCat.includes('stick') || lCat.includes('bar') || lCat.includes('candy')) { iconHTML = '🍡'; } 
+                    else if(lCat.includes('cake') || lCat.includes('slice') || lCat.includes('roll')) { iconHTML = '🍰'; } 
+                    else if(lCat.includes('cup') || lCat.includes('sundae')) { iconHTML = '🍨'; } 
+                    else if(lCat.includes('rock')) { iconHTML = '🪨'; } 
+                    else { iconHTML = '🍧'; }
                 }
                 
                 const div = document.createElement('div');
-                div.className = `cat-item ${cat === 'Bestsellers' ? 'active' : ''}`;
-                if(cat === 'Bestsellers') div.id = 'btn-cat-all'; 
+                // Default Active is "All Items"
+                div.className = `cat-item ${cat === 'All Items' ? 'active' : ''}`;
+                if(cat === 'All Items') div.id = 'btn-cat-all'; 
                 
-                // Single Select Logic Update
                 div.onclick = () => setCategory(cat, div);
-                div.innerHTML = `
-                    <div class="cat-icon">${iconHTML}</div>
-                    <div class="cat-name">${name}</div>
-                `;
+                div.innerHTML = `<div class="cat-icon">${iconHTML}</div><div class="cat-name">${name}</div>`;
                 sidebar.appendChild(div);
             });
 
-            const chipsBar = document.getElementById('chips-bar');
+            // Populate Brands Multi-Select Modal
+            const brandList = document.getElementById('brand-checkbox-list');
             const brands = [...new Set(allItems.map(item => item.brand).filter(b => b))];
             brands.forEach(brand => {
-                const div = document.createElement('div');
-                div.className = 'chip brand-chip';
-                div.innerText = brand;
-                div.onclick = () => setBrand(brand, div);
-                chipsBar.appendChild(div);
+                brandList.innerHTML += `
+                    <label class="brand-label">
+                        <input type="checkbox" value="${brand}" onchange="toggleBrand(this.value)"> 
+                        ${brand}
+                    </label>
+                `;
             });
         }
 
-        // NEW: Single Select Category Function
+        // --- CATEGORY & BRAND LOGIC ---
         function setCategory(category, element) {
             document.querySelectorAll('.cat-item').forEach(btn => btn.classList.remove('active'));
             element.classList.add('active');
-            
             currentCategory = category;
             document.getElementById('products-area').scrollTop = 0; 
             applyFilters();
         }
 
-        function setBrand(brand, element) {
-            const isActive = element.classList.contains('active');
-            document.querySelectorAll('.brand-chip').forEach(el => el.classList.remove('active'));
-            if(isActive) { currentBrand = 'All'; } 
-            else { element.classList.add('active'); currentBrand = brand; }
+        function openBrandModal() { document.getElementById('brand-modal').style.display = 'flex'; }
+        
+        function closeBrandModal() { 
+            document.getElementById('brand-modal').style.display = 'none'; 
+            
+            // Update Chip UI state
+            const chip = document.getElementById('brand-chip-btn');
+            if(selectedBrands.length > 0) {
+                chip.classList.add('active');
+                chip.innerHTML = `🏷️ Brands (${selectedBrands.length}) ▾`;
+            } else {
+                chip.classList.remove('active');
+                chip.innerHTML = `🏷️ Brands ▾`;
+            }
             applyFilters();
         }
 
+        function toggleBrand(brand) {
+            const index = selectedBrands.indexOf(brand);
+            if (index > -1) selectedBrands.splice(index, 1);
+            else selectedBrands.push(brand);
+        }
+
+        // --- CALCULATION HELPERS ---
         function getVolume(name) {
             let total = 0;
             const regex = /(\d+)\s*(ml|l|ltr|gm|g|kg)/gi;
@@ -371,12 +405,20 @@
             return total;
         }
 
+        function getDiscount(item) {
+            let m = parseFloat(item.mrp);
+            let p = parseFloat(item.price);
+            if (m && !isNaN(m) && m > p) return ((m - p) / m) * 100;
+            return 0;
+        }
+
         function extractVolumeText(name) {
             const regex = /(\d+\s*(ml|l|ltr|gm|g|kg))/i;
             const match = name.match(regex);
             return match ? match[0] : '1 Unit';
         }
 
+        // --- FILTER & RENDER ---
         function applyFilters() {
             const wrapper = document.getElementById('menu-grid-wrapper');
             const statusMsg = document.getElementById('status-msg');
@@ -384,43 +426,43 @@
             
             const searchTerm = document.getElementById('search-bar').value.toLowerCase();
             const sortValue = document.getElementById('sort-dropdown').value;
-
             const hasBestsellers = allItems.some(i => i.bestseller && String(i.bestseller).toLowerCase() === 'yes');
 
             let filteredItems = allItems.filter(item => {
                 const isAvailable = String(item.available).toLowerCase() === 'yes' || item.available === true;
-                const matchesBrand = (currentBrand === 'All' || item.brand === currentBrand);
-                const itemCat = item.category || 'More Favorites';
+                
+                // Multi-Brand Filter Check
+                const matchesBrand = (selectedBrands.length === 0 || selectedBrands.includes(item.brand));
                 
                 let matchesCategory = false;
+                const itemCat = item.category || 'More Favorites';
                 
-                // SINGLE SELECT LOGIC
-                if (currentCategory === 'Bestsellers') {
-                    if (isPrintingPDF) {
-                        matchesCategory = true; 
-                    } else {
-                        let isBestseller = (item.bestseller && String(item.bestseller).toLowerCase() === 'yes');
-                        matchesCategory = hasBestsellers ? isBestseller : true; 
-                    }
+                if (currentCategory === 'All Items' || isPrintingPDF) {
+                    matchesCategory = true; 
+                } else if (currentCategory === 'Bestsellers') {
+                    let isBestseller = (item.bestseller && String(item.bestseller).toLowerCase() === 'yes');
+                    matchesCategory = hasBestsellers ? isBestseller : true; 
                 } else {
                     matchesCategory = (itemCat === currentCategory);
                 }
 
-                if (searchTerm.trim() !== '') {
-                    matchesCategory = true; 
-                }
+                if (searchTerm.trim() !== '') matchesCategory = true; 
                 
                 const matchesSearch = item.name.toLowerCase().includes(searchTerm);
                 
                 return isAvailable && matchesBrand && matchesCategory && matchesSearch;
             });
 
+            // Sorting (Added Discount Sort)
             if (sortValue === 'low-high') filteredItems.sort((a, b) => a.price - b.price);
             else if (sortValue === 'high-low') filteredItems.sort((a, b) => b.price - a.price);
             else if (sortValue === 'vol-low-high') filteredItems.sort((a, b) => getVolume(a.name) - getVolume(b.name));
             else if (sortValue === 'vol-high-low') filteredItems.sort((a, b) => getVolume(b.name) - getVolume(a.name));
+            else if (sortValue === 'disc-high-low') filteredItems.sort((a, b) => getDiscount(b) - getDiscount(a));
 
-            let displayTitle = currentCategory === 'Bestsellers' ? 'Best Sellers' : currentCategory;
+            // Setup Header Title
+            let displayTitle = currentCategory;
+            if (currentCategory === 'Bestsellers') displayTitle = 'Best Sellers';
             if (searchTerm.trim() !== '') displayTitle = 'Search Results';
             if (isPrintingPDF) displayTitle = 'Complete Menu';
             
@@ -435,9 +477,12 @@
 
             statusMsg.style.display = 'none';
 
+            // Grouping logic for rendering sections
             const groupedItems = {};
             filteredItems.forEach(item => {
-                const cat = (currentCategory === 'Bestsellers' && !isPrintingPDF && searchTerm === '') ? 'Top Picks' : (item.category || 'More Favorites');
+                let cat = item.category || 'More Favorites';
+                // If user selected "Bestsellers" specifically (and not searching/printing), put them in one block
+                if (currentCategory === 'Bestsellers' && !isPrintingPDF && searchTerm === '') cat = 'Top Picks';
                 if (!groupedItems[cat]) groupedItems[cat] = [];
                 groupedItems[cat].push(item);
             });
@@ -463,11 +508,15 @@
                     else if(b.includes('baskin')) badgeClass = 'badge-baskin-robbins';
 
                     let priceHTML = '';
-                    let mrp = parseFloat(item.mrp);
-                    let price = parseFloat(item.price);
+                    let redDiscountIcon = '';
+                    let discountNum = getDiscount(item);
                     
-                    if (item.mrp && !isNaN(mrp) && mrp > price) {
-                        let discount = Math.round(((mrp - price) / mrp) * 100);
+                    if (discountNum > 0) {
+                        let discount = Math.round(discountNum);
+                        
+                        // NEW: EXTRA RED ARROW ICON ON TOP RIGHT OF IMAGE
+                        redDiscountIcon = `<div class="red-discount-icon">⬇ ${discount}%</div>`;
+                        
                         priceHTML = `
                             <div class="discount-tag">${discount}% OFF</div>
                             <div class="price-row">
@@ -478,9 +527,7 @@
                     } else {
                         priceHTML = `
                             <div class="discount-tag" style="visibility: hidden;">0% OFF</div>
-                            <div class="price-row">
-                                <span class="item-price">₹${item.price}</span>
-                            </div>
+                            <div class="price-row"><span class="item-price">₹${item.price}</span></div>
                         `;
                     }
 
@@ -491,6 +538,7 @@
                         <div class="menu-card">
                             <div class="card-img-wrapper">
                                 ${bestsellerHTML}
+                                ${redDiscountIcon}
                                 <img src="${item.img}" referrerpolicy="no-referrer" loading="lazy" onerror="this.src='https://via.placeholder.com/300x220?text=Ice+Cream'">
                                 <div class="btn-container" id="add-wrap-${safeName}"></div>
                             </div>
@@ -507,13 +555,19 @@
             }
             wrapper.innerHTML = newHTML;
             updateAddButtons();
+            
+            document.getElementById('products-area').dispatchEvent(new Event('scroll'));
         }
 
+        // --- SCROLL SPY ---
         function setupScrollSpy() {
             const productsArea = document.getElementById('products-area');
             const sidebar = document.getElementById('category-sidebar');
 
             productsArea.addEventListener('scroll', () => {
+                // If user is inside a specific category (not 'All Items'), no need to spy multiple sections
+                if (currentCategory !== 'All Items' && currentCategory !== 'Bestsellers') return;
+
                 const sections = document.querySelectorAll('.category-section');
                 let currentCatName = '';
                 
@@ -525,7 +579,7 @@
                 });
 
                 if (productsArea.scrollTop < 20) {
-                    currentCatName = 'Bestsellers'; 
+                    currentCatName = currentCategory; 
                 } else if (!currentCatName && sections.length > 0) {
                     currentCatName = sections[0].querySelector('.category-title').innerText;
                 }
@@ -535,8 +589,8 @@
                     if (!nameDiv) return;
                     
                     let isMatch = false;
-                    if (currentCatName === 'Bestsellers' || currentCatName === 'Top Picks') {
-                        isMatch = el.id === 'btn-cat-all';
+                    if (currentCatName === 'All Items' || currentCatName === 'Bestsellers' || currentCatName === 'Top Picks') {
+                        isMatch = el.classList.contains('active'); 
                     } else {
                         isMatch = nameDiv.innerText.trim().toUpperCase() === currentCatName.toUpperCase();
                     }
@@ -576,6 +630,7 @@
             });
         }
 
+        // --- CART OPERATIONS ---
         function addToCart(name, price, brand) {
             if(cart[name]) { cart[name].qty += 1; } 
             else { cart[name] = { price: price, qty: 1, brand: brand }; }
@@ -656,14 +711,16 @@
             }
         }
 
+        // --- PDF & CHECKOUT ---
         window.addEventListener('afterprint', () => { document.body.className = ''; });
 
         function downloadMenuPDF() {
             isPrintingPDF = true;
             
-            // PDF print karte time "Bestsellers" pe reset karein taaki full menu print ho sake
-            currentCategory = 'Bestsellers'; 
-            currentBrand = 'All';
+            // PDF print karte time "All Items" pe reset karein
+            currentCategory = 'All Items'; 
+            selectedBrands = [];
+            
             document.querySelectorAll('.cat-item').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn-cat-all').classList.add('active');
             
