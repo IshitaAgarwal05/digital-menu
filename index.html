@@ -34,7 +34,6 @@
         .search-input, .sort-select { padding: 12px 20px; border: 1px solid #ddd; border-radius: 50px; font-size: 1em; outline: none; transition: all 0.3s; }
         .search-input { width: 250px; }
         .search-input:focus, .sort-select:focus { border-color: var(--primary-color); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .sort-select { width: 200px; } /* Dropdown choda karne ke liye */
 
         .pdf-btn { padding: 12px 25px; border: none; border-radius: 50px; background: #8e44ad; color: white; font-size: 1em; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.2); transition: 0.3s; }
         .pdf-btn:hover { background: #9b59b6; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(142, 68, 173, 0.3); }
@@ -79,35 +78,46 @@
         .checkout-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 1.1em; font-weight: bold; color: white; cursor: pointer; margin-top: 15px; }
         .btn-wa { background: #25D366; } .btn-print { background: var(--glacier-blue); } .btn-clear { background: #ff9f43; color: white; } .close-cart { background: #ff4757; }
 
-        /* --- SMART PDF & PRINT LAYOUT MAGIC (ULTRA COMPACT DESIGN) --- */
+        /* --- PDF & PRINT LAYOUT FIX --- */
         @media print {
             @page { margin: 5mm; size: A4 portrait; }
             body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: #fff; }
             
             #loading-bar, #brand-filter-box, #category-filter-box, .search-sort-container, #floating-cart, .add-btn, #status-msg, .qty-btn { display: none !important; }
 
-            /* हेडर को और छोटा किया गया है */
-            body.print-menu header { box-shadow: none; border-bottom: 2px solid var(--primary-color); padding: 0 0 5px 0; text-align: center; margin-bottom: 5px; }
+            body.print-menu header { box-shadow: none; border-bottom: 2px solid var(--primary-color); padding: 5px 0 10px 0; text-align: center; margin-bottom: 10px; }
             body.print-menu header h1 { font-size: 20pt; margin: 0; color: var(--glacier-blue); }
             body.print-menu header p { font-size: 9pt; margin: 2px 0 0; }
             
             body.print-menu .category-section { margin-bottom: 10px; page-break-inside: avoid; clear: both; }
-            body.print-menu .category-title { font-size: 14pt !important; margin: 2px 0 5px 0 !important; padding-bottom: 2px !important; border-bottom: 2px solid var(--primary-color) !important; color: var(--glacier-blue) !important; display: block; }
+            body.print-menu .category-title { font-size: 14pt !important; margin: 5px 0 10px 0 !important; padding-bottom: 2px !important; border-bottom: 2px solid var(--primary-color) !important; color: var(--glacier-blue) !important; display: block; }
             
             body.print-menu .menu-container { display: flex !important; flex-wrap: wrap !important; justify-content: flex-start !important; gap: 0 !important; padding: 0 !important; }
             
-            /* कार्ड को सिकुड़ा हुआ (Shrink-wrap) बनाने के लिए Block display का इस्तेमाल */
-            body.print-menu .menu-card { display: block !important; width: 23% !important; margin: 0 1% 8px 1% !important; box-shadow: none !important; border: 1px solid #ddd !important; border-radius: 6px !important; background: #fff !important; box-sizing: border-box !important; page-break-inside: avoid; }
-            body.print-menu .menu-card img { height: 75px !important; padding: 2px !important; border-bottom: none !important; width: 100% !important; object-fit: contain !important; }
+            body.print-menu .menu-card { 
+                width: 23% !important; margin: 0 1% 10px 1% !important; box-shadow: none !important; 
+                border: 1px solid #ddd !important; border-radius: 6px !important; background: #fff !important; 
+                box-sizing: border-box !important; page-break-inside: avoid; 
+                display: flex !important; flex-direction: column !important;
+            }
+            body.print-menu .menu-card img { height: 80px !important; padding: 4px !important; border-bottom: none !important; width: 100% !important; object-fit: contain !important; }
             
-            /* फालतू खाली जगह हटाई गई */
-            body.print-menu .info { padding: 4px !important; text-align: center !important; display: block !important; }
-            body.print-menu .brand-badge { font-size: 5.5pt !important; padding: 2px 4px !important; margin-bottom: 2px !important; display: inline-block !important; }
-            body.print-menu .item-name { font-size: 8.5pt !important; line-height: 1.1 !important; margin: 2px 0 !important; min-height: auto !important; }
-            
-            /* प्राइस को आइटम के नाम के बिल्कुल नीचे चिपकाने के लिए */
-            body.print-menu .price-cart-row { margin-top: 0px !important; display: block !important; text-align: center !important; }
-            body.print-menu .price { font-size: 11pt !important; display: inline-block !important; }
+            /* THE FIX: Force content to stick to the top, removing the gap before price */
+            body.print-menu .info { 
+                padding: 4px 4px 6px 4px !important; 
+                display: flex !important; 
+                flex-direction: column !important; 
+                justify-content: flex-start !important; /* Forces items upwards */
+                align-items: center !important; 
+                flex-grow: 1 !important;
+            }
+            body.print-menu .brand-badge { font-size: 5.5pt !important; padding: 2px 4px !important; margin: 0 0 3px 0 !important; }
+            body.print-menu .item-name { 
+                font-size: 8.5pt !important; line-height: 1.1 !important; margin: 0 0 3px 0 !important; 
+                min-height: 0 !important; text-align: center !important; width: 100% !important;
+            }
+            body.print-menu .price-cart-row { margin: 0 !important; padding: 0 !important; display: block !important; text-align: center !important; }
+            body.print-menu .price { font-size: 11pt !important; margin: 0 !important; line-height: 1 !important; display: inline-block !important; }
 
             body.print-cart header, body.print-cart .menu-wrapper { display: none !important; }
             body.print-cart #cart-modal { display: block !important; position: static; background: none; }
@@ -183,13 +193,11 @@
         async function loadData() {
             const statusMsg = document.getElementById('status-msg');
             const loadingBar = document.getElementById('loading-bar');
-            
             loadingBar.style.width = '30%'; 
 
             try {
                 const response = await fetch(googleSheetUrl);
                 loadingBar.style.width = '70%'; 
-                
                 allItems = await response.json();
                 
                 if(!allItems || allItems.length === 0) {
@@ -205,7 +213,6 @@
 
                 loadingBar.style.width = '100%';
                 setTimeout(() => { loadingBar.style.opacity = '0'; }, 500);
-
             } catch (error) {
                 statusMsg.innerText = "Error fetching data. Check internet or Web App URL.";
                 loadingBar.style.width = '100%';
@@ -249,7 +256,6 @@
             applyFilters();
         }
 
-        // SMART VOLUME EXTRACTOR (Reads "ml", "Ltr", "gm" directly from item name)
         function getVolume(name) {
             let total = 0;
             const regex = /(\d+)\s*(ml|l|ltr|gm|g|kg)/gi;
@@ -257,10 +263,10 @@
             while ((match = regex.exec(name)) !== null) {
                 let val = parseFloat(match[1]);
                 let unit = match[2].toLowerCase();
-                if (unit === 'l' || unit === 'ltr' || unit === 'kg') val *= 1000; // Convert Liters/KG to ml/gm
+                if (unit === 'l' || unit === 'ltr' || unit === 'kg') val *= 1000;
                 total += val;
             }
-            return total; // Returns 0 if no volume is found in name
+            return total;
         }
 
         function applyFilters() {
@@ -269,7 +275,6 @@
             const searchTerm = document.getElementById('search-bar').value.toLowerCase();
             const sortValue = document.getElementById('sort-dropdown').value;
 
-            // 1. Filter Items 
             let filteredItems = allItems.filter(item => {
                 const isAvailable = String(item.available).toLowerCase() === 'yes' || item.available === true;
                 const matchesBrand = (currentBrand === 'All' || item.brand === currentBrand);
@@ -280,7 +285,6 @@
                 return isAvailable && matchesBrand && matchesCategory && matchesSearch;
             });
 
-            // 2. Sort Items (Price OR Volume)
             if (sortValue === 'low-high') {
                 filteredItems.sort((a, b) => a.price - b.price);
             } else if (sortValue === 'high-low') {
@@ -300,7 +304,6 @@
 
             statusMsg.style.display = 'none';
 
-            // 3. GROUP ITEMS BY CATEGORY
             const groupedItems = {};
             filteredItems.forEach(item => {
                 const cat = item.category || 'More Favorites';
@@ -308,7 +311,6 @@
                 groupedItems[cat].push(item);
             });
 
-            // 4. Render HTML
             let newHTML = '';
             for (const [category, items] of Object.entries(groupedItems)) {
                 newHTML += `
@@ -345,7 +347,6 @@
             menuWrapper.innerHTML = newHTML;
         }
 
-        // --- CART LOGIC ---
         function addToCart(name, price, brand) {
             if(cart[name]) { cart[name].qty += 1; } 
             else { cart[name] = { price: price, qty: 1, brand: brand }; }
