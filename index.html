@@ -54,28 +54,22 @@
         .app-container { display: flex; flex-direction: column; flex: 1; overflow: hidden; background: #fff; }
         
         /* 1. CATEGORIES ROW */
-        .sidebar { width: 100%; background: #fff; display: flex; overflow-x: auto; padding: 15px 15px 5px 15px; gap: 10px; scrollbar-width: none; scroll-behavior: smooth; flex-shrink: 0; z-index: 10; }
+        .sidebar { width: 100%; background: #fff; display: flex; overflow-x: auto; padding: 15px 10px 5px 10px; scrollbar-width: none; scroll-behavior: smooth; flex-shrink: 0; z-index: 10; }
         .sidebar::-webkit-scrollbar { display: none; }
-        .cat-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; min-width: 70px; }
+        .cat-item { display: flex; flex-direction: column; align-items: center; padding: 0 8px; cursor: pointer; transition: 0.2s; min-width: 65px; }
         .cat-icon { font-size: 2em; margin-bottom: 8px; background: #f8f9fa; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: 0.2s; overflow: hidden; }
         .cat-name { font-size: 0.65em; font-weight: 500; color: #666; text-align: center; padding-bottom: 8px; border-bottom: 3px solid transparent; line-height: 1.1; transition: 0.2s; white-space: nowrap; }
         .cat-item.active .cat-icon { border-color: var(--glacier-blue); background: #eef3ff; }
         .cat-item.active .cat-name { color: var(--glacier-blue); font-weight: 700; border-bottom-color: var(--glacier-blue); }
 
-        /* 2. BRANDS ROW (FIXED LOGO SPACING & ALIGNMENT) */
-        .brands-row { width: 100%; background: #fff; border-bottom: 1px solid #f0f0f0; display: flex; overflow-x: auto; padding: 10px 15px 15px 15px; gap: 12px; scrollbar-width: none; scroll-behavior: smooth; flex-shrink: 0; z-index: 9; }
+        /* 2. BRANDS ROW (LOGO UPDATED) */
+        .brands-row { width: 100%; background: #fff; border-bottom: 1px solid #f0f0f0; display: flex; overflow-x: auto; padding: 5px 10px 10px 10px; scrollbar-width: none; scroll-behavior: smooth; flex-shrink: 0; z-index: 9; }
         .brands-row::-webkit-scrollbar { display: none; }
-        .brand-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; flex-shrink: 0; padding: 0 5px; } 
-        
-        /* 🚨 FIX: Added padding and box-sizing so border doesn't touch the image */
-        .brand-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; box-shadow: 0 2px 5px rgba(0,0,0,0.06); transition: 0.2s; background: #fff; padding: 4px; box-sizing: border-box; }
-        
-        /* 🚨 FIX: transform scale shrinks the logo slightly to create breathing room */
-        .brand-icon img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; transform: scale(0.85); transition: 0.2s; } 
-        
-        .brand-name { font-size: 0.55em; font-weight: 600; color: #777; text-align: center; margin-top: 6px; white-space: nowrap; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .brand-item.active .brand-icon { border-color: var(--primary-color); transform: scale(1.05); box-shadow: 0 4px 10px rgba(228, 77, 38, 0.2); }
+        .brand-item { display: flex; flex-direction: column; align-items: center; padding: 0 8px; cursor: pointer; transition: 0.2s; min-width: 60px; }
+        .brand-icon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: 0.2s; overflow: hidden; padding: 2px; background: #fff; }
+        .brand-icon img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; } /* Added for image logos */
+        .brand-name { font-size: 0.55em; font-weight: 600; color: #777; text-align: center; margin-top: 6px; white-space: nowrap; transition: 0.2s; text-transform: uppercase; }
+        .brand-item.active .brand-icon { border-color: var(--primary-color); box-shadow: 0 4px 8px rgba(228, 77, 38, 0.2); transform: scale(1.05); }
         .brand-item.active .brand-name { color: var(--primary-color); font-weight: 800; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f4f6f9; }
@@ -86,6 +80,7 @@
         .chip { padding: 8px 16px; border: 1px solid #e0e0e0; border-radius: 50px; background: #fff; font-size: 0.8em; font-weight: 600; color: #444; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .chip-input { border: none; outline: none; background: transparent; font-family: inherit; font-size: 1em; width: 140px; color: #333; }
         .chip-select { border: none; outline: none; background: transparent; font-family: inherit; font-size: 1em; font-weight: 600; color: #444; cursor: pointer; }
+        .brand-dropdown-chip.active { background: #eef3ff; border-color: var(--glacier-blue); color: var(--glacier-blue); }
 
         /* Products Scrolling Area */
         .products-area { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 120px; scroll-behavior: smooth; }
@@ -136,7 +131,7 @@
         .item-price { font-size: 1.05em; font-weight: 800; color: #222; }
         .item-mrp { font-size: 0.75em; font-weight: 500; color: #999; text-decoration: line-through; }
 
-        #status-msg { margin-top: 50px; text-align: center; color: #888; font-size: 1em; }
+        #status-msg { margin-top: 50px; text-align: center; font-weight: 500; color: #888; font-size: 1em; }
 
         /* --- STICKY BOTTOM CART BANNER --- */
         #bottom-cart-banner { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 500px; background: var(--glacier-blue); color: white; padding: 14px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; box-shadow: 0 5px 20px rgba(31, 81, 198, 0.4); z-index: 1000; cursor: pointer; transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-sizing: border-box; }
@@ -267,14 +262,15 @@
         let currentBrand = 'All Brands'; 
         let cart = {}; 
 
-        // 🟢🟢 ALL PROVIDED BRAND LOGOS 🟢🟢
+        // 🟢🟢 BRAND LOGO IMAGE LINKS 🟢🟢
+        // यहाँ आप अपने ब्रांड्स के असली लोगो का लिंक डाल सकते हैं। 
+        // अगर लिंक नहीं होगा, तो यह खुद-ब-खुद एक डमी लोगो बना लेगा।
         const brandImageLinks = {
-            "baskin robbins": "https://i.postimg.cc/j5FTdyfz/brlogo.png", 
+          "baskin robbins": "https://i.postimg.cc/j5FTdyfz/brlogo.png",
             "london dairy": "https://i.postimg.cc/jdtSC4nV/LD-logo.png",
             "mother dairy": "https://i.postimg.cc/4dSGNpcB/md_logo.png",
             "amul": "https://via.placeholder.com/100/e44d26/ffffff?text=Amul",
             "kwality": "https://i.postimg.cc/ncGM1PfV/kw_logo.png",
-            "walls": "https://i.postimg.cc/ncGM1PfV/kw_logo.png", 
             "gianis": "https://i.postimg.cc/L6kw6Gr2/lgo-gianis.png",
             "havmor": "https://i.postimg.cc/KvD45HhZ/logo_havmor.png",
             "hocco": "https://i.postimg.cc/CLsd4Qph/hocco_logo.png"
@@ -406,17 +402,6 @@
                     btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
                 } else { btn.classList.remove('active'); }
             });
-
-            // 🚀 SMART AUTO-SWITCH LOGIC 🚀
-            // If viewing Bestsellers, but the selected brand has NO bestsellers, switch to "All Items" tab automatically!
-            if (currentCategory === 'Bestsellers' && brandName !== 'All Brands') {
-                const brandHasBestsellers = allItems.some(i => i.brand === brandName && i.bestseller && String(i.bestseller).toLowerCase() === 'yes');
-                if (!brandHasBestsellers) {
-                    setCategory('All Items'); // Automatically jump to All Items
-                    return; // setCategory already calls applyFilters
-                }
-            }
-
             document.getElementById('products-area').scrollTop = 0; 
             applyFilters();
         }
@@ -492,15 +477,7 @@
             document.getElementById('current-category-title').firstElementChild.innerText = displayTitle;
             itemCountStr.innerText = `${filteredItems.length} items`;
 
-            // 🚨 FAIL-SAFE EMPTY MESSAGE 🚨
             if (filteredItems.length === 0) {
-                statusMsg.innerHTML = `
-                    <div style="padding: 30px 10px; text-align: center;">
-                        <span style="font-size: 3em;">🍦</span>
-                        <h3 style="color: #666; margin: 10px 0 5px 0;">No items found</h3>
-                        <p style="margin: 0; font-size: 0.9em; color:#888;">Try changing your filters or searching for something else.</p>
-                        <button onclick="setCategory('All Items'); setBrand('All Brands'); document.getElementById('search-bar').value='';" style="margin-top: 15px; padding: 10px 20px; background: var(--glacier-blue); color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(31,81,198,0.3);">View All Ice Creams</button>
-                    </div>`;
                 statusMsg.style.display = 'block';
                 gridWrapper.innerHTML = '';
                 return;
@@ -558,7 +535,7 @@
                     </div>
                 `;
 
-                // PROMO BANNERS INJECTION
+                // 🚨 PROMO BANNERS INJECTION (MOBILE ONLY) 🚨
                 if (currentCategory === 'All Items' && currentBrand === 'All Brands' && searchTerm === '') {
                     if (index === 5) { 
                         newHTML += `
@@ -703,6 +680,7 @@
 
         function checkout(method) {
             if(Object.keys(cart).length === 0) return;
+            
             if (method === 'whatsapp') {
                 let message = "Hello Glacier Ice Cream!🍦\n\n*New Order:*\n";
                 let total = 0;
