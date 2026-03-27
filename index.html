@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Glacier Ice Cream - Digital Menu</title>
     
     <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/DfWgmYTD/favicon.jpg"> 
@@ -19,9 +19,9 @@
             --main-bg: #f8f9fc;
         }
 
-        /* 🚨 GLOBAL RESET & LOCK 🚨 */
-        html { overflow-x: hidden; width: 100vw; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg-color); color: #333; overflow-x: hidden; width: 100vw; max-width: 100%; height: 100vh; display: flex; flex-direction: column; position: relative; }
+        /* 🚨 GLOBAL RESET & LOCK (WITH iOS FIX) 🚨 */
+        html { overflow-x: hidden; width: 100vw; height: -webkit-fill-available; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: var(--bg-color); color: #333; overflow-x: hidden; width: 100vw; max-width: 100%; height: 100dvh; min-height: -webkit-fill-available; display: flex; flex-direction: column; position: relative; }
         img { -webkit-user-drag: none; -khtml-user-drag: none; -moz-user-drag: none; -o-user-drag: none; user-drag: none; -webkit-touch-callout: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; pointer-events: none; }
         
         .skeleton-bg { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%) !important; background-size: 200% 100% !important; animation: shimmer 1.5s infinite linear !important; }
@@ -98,7 +98,7 @@
         .item-price { font-size: 1.2em; font-weight: 800; color: #0f172a; }
         .item-mrp { font-size: 0.85em; font-weight: 500; color: #94a3b8; text-decoration: line-through; }
 
-        /* ✨ NEW FLOATING '+' BUTTON ✨ */
+        /* ✨ FLOATING '+' BUTTON ✨ */
         .btn-container { position: absolute; right: 15px; bottom: 15px; z-index: 4; }
         .app-add-btn { width: 36px; height: 36px; border-radius: 50%; background: #fff; color: var(--glacier-blue); border: 1px solid #e2e8f0; font-size: 1.5em; font-weight: 500; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: 0.2s; line-height: 1; padding-bottom: 2px;}
         .app-add-btn:hover { border-color: var(--glacier-blue); color: var(--glacier-blue); background: #f8faff; transform: scale(1.05);}
@@ -116,11 +116,11 @@
         .banner-right { font-size: 1.1em; display: flex; align-items: center; gap: 8px; color: #38bdf8;}
 
         /* --- MODALS --- */
-        .custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.7); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-        .modal-content-box { background: white; padding: 30px; border-radius: 24px; width: 90%; max-width: 450px; max-height: 85vh; overflow-y: auto; box-sizing: border-box; animation: scaleUp 0.3s ease-out; display: flex; flex-direction: column; position: relative;}
+        .custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(15, 23, 42, 0.7); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-content-box { background: white; padding: 30px; border-radius: 24px; width: 90%; max-width: 450px; max-height: 90dvh; overflow-y: auto; box-sizing: border-box; animation: scaleUp 0.3s ease-out; display: flex; flex-direction: column; position: relative;}
         @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        .modal-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 0px;}
+        .modal-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px;}
         .modal-header-row h2 { margin: 0; color: #1e293b; font-size: 1.4em; font-weight: 800;}
         .close-modal-icon { font-size: 1.5em; color: #94a3b8; cursor: pointer; font-weight: bold; transition: 0.2s;}
         .close-modal-icon:hover { color: #e74c3c; }
@@ -160,7 +160,7 @@
         .order-history-items { color: #475569; font-size: 0.85em; line-height: 1.6; margin: 0; }
         .order-item-line { display: flex; gap: 8px; margin-bottom: 4px; align-items: flex-start; }
 
-        /* 🟢 NEW TABS UI FOR PROFILE/ORDERS 🟢 */
+        /* 🟢 TABS UI FOR PROFILE/ORDERS 🟢 */
         #modal-tab-bar { display: flex; width: 100%; border-bottom: 2px solid #f1f5f9; margin-bottom: 20px; flex-shrink: 0;}
         .modal-tab { flex: 1; text-align: center; padding: 12px; font-weight: 700; font-size: 0.95em; color: #64748b; cursor: pointer; transition: 0.2s; position: relative;}
         .modal-tab:hover { color: var(--glacier-blue); background: #f8faff; border-radius: 10px 10px 0 0;}
@@ -170,9 +170,9 @@
         .modal-tab-content { display: none; }
         .modal-tab-content.active { display: flex; flex-direction: column; }
 
-        /* 📱 MOBILE RESPONSIVENESS */
+        /* 📱 MOBILE RESPONSIVENESS WITH iOS FIX */
         @media (max-width: 800px) {
-            header { padding: 10px 15px; }
+            header { padding: 10px 15px; height: 60px; }
             .header-logo { height: 40px; }
             .hide-mobile-text { display: none; }
             .main-layout { flex-direction: column; }
@@ -180,14 +180,28 @@
             .cat-item { flex-direction: column; gap: 5px; padding: 8px; border-radius: 12px; min-width: 75px;}
             .cat-icon { font-size: 1.8em; }
             .cat-name { font-size: 0.65em; }
-            .content-area { padding: 15px; }
-            .menu-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+            .content-area { padding: 15px; padding-bottom: 80px; }
+            .menu-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding-bottom: 30px;}
             .menu-card { padding: 12px; }
             .card-img-wrapper { height: 120px; }
             .item-name { font-size: 0.9em; min-height: 35px;}
             .item-price { font-size: 1.1em; }
+            
+            /* 🚨 SAFARI/iOS MODAL FIX 🚨 */
             .custom-modal { align-items: flex-end; }
-            .modal-content-box { border-radius: 24px 24px 0 0; width: 100%; max-width: 100%; margin: 0; animation: slideUp 0.3s ease-out; padding: 25px 20px;}
+            .modal-content-box { 
+                border-radius: 24px 24px 0 0; 
+                width: 100%; 
+                max-width: 100%; 
+                margin: 0; 
+                animation: slideUp 0.3s ease-out; 
+                padding: 25px 20px;
+                /* Extra padding for iOS home bar */
+                padding-bottom: calc(25px + env(safe-area-inset-bottom)); 
+                max-height: 90dvh; 
+            }
+            .auth-input { padding: 12px; margin-bottom: 12px; }
+            .auth-btn, .checkout-btn { margin-bottom: 10px; }
             @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         }
         @media print { body { display: none !important; } }
@@ -276,8 +290,8 @@
                     <input type="text" value="+91" disabled style="width: 60px; padding: 14px; border: 2px solid #e2e8f0; border-radius: 10px; background: #f1f5f9; text-align: center; font-weight: bold; color: #475569;">
                     <input type="number" id="phone-number" class="auth-input" placeholder="9876543210" style="flex: 1; margin-bottom: 0;">
                 </div>
-                <div id="recaptcha-container" style="margin-top: 15px;"></div>
-                <button class="auth-btn" id="send-otp-btn" onclick="sendOTP()" style="margin-top: 15px;">Send OTP</button>
+                <div id="recaptcha-container" style="margin-top: 10px;"></div>
+                <button class="auth-btn" id="send-otp-btn" onclick="sendOTP()" style="margin-top: 10px;">Send OTP</button>
             </div>
 
             <div id="otp-input-section" style="display: none;">
@@ -285,7 +299,7 @@
                 <input type="number" id="otp-code" class="auth-input" placeholder="123456" style="letter-spacing: 2px; font-weight: bold; text-align: center;">
                 <button class="auth-btn" id="verify-otp-btn" onclick="verifyOTP()">Verify & Login</button>
             </div>
-            <div id="auth-error" style="color: #e74c3c; font-size: 0.85em; font-weight: 600; margin-top: 15px; text-align: center;"></div>
+            <div id="auth-error" style="color: #e74c3c; font-size: 0.85em; font-weight: 600; margin-top: 10px; text-align: center;"></div>
         </div>
     </div>
 
@@ -559,7 +573,6 @@
             if (window.globalUser) { 
                 document.getElementById('profile-modal').style.display = 'flex'; 
                 document.getElementById('profile-msg').innerText = ''; 
-                // Reset to profile tab when opening
                 switchModalTab('profile');
             } 
             else { 
@@ -569,13 +582,9 @@
             }
         };
 
-        // 🟢 NEW: TAB SWITCHING LOGIC 🟢
         window.switchModalTab = (tabName) => {
-            // Hide all contents
             document.querySelectorAll('.modal-tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.modal-tab').forEach(el => el.classList.remove('active'));
-
-            // Show target content
             document.getElementById(`tab-${tabName}-content`).classList.add('active');
             document.getElementById(`tab-${tabName}-btn`).classList.add('active');
         }
@@ -617,7 +626,6 @@
         window.loadPastOrders = async (uid) => {
             const listDiv = document.getElementById('order-history-list');
             try {
-                // Modified query to limit to last 10 for better mobile performance
                 const querySnapshot = await getDocs(query(collection(db, "orders"), where("userId", "==", uid), orderBy("timestamp", "desc")));
                 
                 if (querySnapshot.empty) { 
@@ -626,18 +634,15 @@
                 }
                 
                 let html = '';
-                // Limit locally to 10 for safety, although index handles ordering
                 let count = 0;
                 querySnapshot.forEach((doc) => {
                     if (count >= 10) return;
                     const data = doc.data(); 
                     
-                    // Date Format
                     const dateObj = data.timestamp ? new Date(data.timestamp.seconds * 1000) : new Date();
                     const dateStr = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
                     const timeStr = dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
                     
-                    // Items List Format (New Line for each item)
                     let itemsHtml = '';
                     if(data.itemsSummary) {
                         const itemsArray = data.itemsSummary.split(', ');
@@ -661,7 +666,7 @@
                 });
                 listDiv.innerHTML = html;
             } catch(e) { 
-                listDiv.innerHTML = '<p style="font-size: 0.85em; color: #e74c3c; text-align: center; padding:15px;">Failed to load orders. Index may be building in Firebase.</p>'; 
+                listDiv.innerHTML = '<p style="font-size: 0.85em; color: #e74c3c; text-align: center; padding:15px;">Failed to load orders. Please check connection.</p>'; 
                 console.error(e); 
             }
         };
