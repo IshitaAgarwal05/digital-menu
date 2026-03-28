@@ -26,11 +26,10 @@ const ProductCard = ({ product }) => {
     >
       <div className="card-img-wrapper">
         {product.bestseller && <div className="bestseller-badge">⭐ Bestseller</div>}
-        {discountNum > 0 && (
-          <div className="red-discount-icon" style={{
-            position: 'absolute', top: '-5px', right: '-5px', background: 'var(--active-brand-red)',
-            color: 'white', fontSize: '0.7em', fontWeight: '800', padding: '4px 8px', borderRadius: '8px', zIndex: 3
-          }}>⬇</div>
+        {product.mrp && product.mrp > product.price && (
+          <div className="discount-tag">
+            {Math.round(((product.mrp - product.price) / product.mrp) * 100)}% <span>OFF</span>
+          </div>
         )}
         <img
           src={product.image}
