@@ -358,19 +358,25 @@
 
         function protectImages(e) { if (e.target.tagName === 'IMG' || e.target.tagName === 'svg') { e.preventDefault(); return false; } return true; }
 
-       // 🟢 HELPER: Get Launch Date from Data (SUPER ROBUST FIX)
+   // 🟢 HELPER: Get Launch Date from Data (SAFARI PROOF)
         function getLaunchDate(item) {
             let dateStr = null;
-            // यह कोड कॉलम के नाम से अपने आप स्पेस हटाकर उसे ढूँढ लेगा
+            // कॉलम ढूँढने का सबसे पक्का तरीका
             for (let key in item) {
-                let cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
-                if (cleanKey === 'launchingyear' || cleanKey === 'launchdate') {
-                    dateStr = item[key];
-                    break;
+                let cleanKey = String(key).toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (cleanKey.includes('launch') || cleanKey.includes('year') || cleanKey.includes('date')) {
+                    if (item[key]) { dateStr = item[key]; break; }
                 }
             }
             if (!dateStr || String(dateStr).trim() === '') return null;
-            let d = new Date(dateStr);
+            
+            let cleanDateStr = String(dateStr).trim();
+            // 🔥 iPhone/Safari Fix: "February 2026" को "01 February 2026" में बदलना
+            if (/^[a-zA-Z]+\s+\d{4}$/.test(cleanDateStr)) {
+                cleanDateStr = "01 " + cleanDateStr; 
+            }
+            
+            let d = new Date(cleanDateStr);
             return isNaN(d.getTime()) ? null : d;
         }
 
@@ -380,10 +386,25 @@
             if (!launchDate) return false;
             let now = new Date();
             let monthsDiff = (now.getFullYear() - launchDate.getFullYear()) * 12 + (now.getMonth() - launchDate.getMonth());
-            // यह पिछले 3 महीने और अगर आप एडवांस में अगले महीने की डेट डालते हैं, तो उसे भी ले लेगा
             return monthsDiff >= -2 && monthsDiff <= 3; 
         }
 
+        // 🟢 HELPER: Load Data (CACHE PROOF)
+        async function loadData() {
+            const statusMsg = document.getElementById('status-msg'); const loadingBar = document.getElementById('loading-bar');
+            loadingBar.style.width = '30%'; statusMsg.style.display = 'block';
+            try {
+                // 🔥 Anti-Cache Fix: हर बार ताज़ा डेटा लाने के लिए URL में Time जोड़ दिया
+                const noCacheUrl = googleSheetUrl + "?t=" + new Date().getTime();
+                const response = await fetch(noCacheUrl); 
+                loadingBar.style.width = '70%'; 
+                allItems = await response.json();
+                
+                if(!allItems || allItems.length === 0) { statusMsg.innerText = "No items found."; loadingBar.style.width = '100%'; return; }
+                setupAppUI(); applyFilters();
+                loadingBar.style.width = '100%'; setTimeout(() => { loadingBar.style.opacity = '0'; statusMsg.style.display='none'; }, 500);
+            } catch (error) { statusMsg.innerText = "Error fetching menu data."; loadingBar.style.width = '100%'; }
+        }
         async function loadData() {
             const statusMsg = document.getElementById('status-msg'); const loadingBar = document.getElementById('loading-bar');
             loadingBar.style.width = '30%'; statusMsg.style.display = 'block';
