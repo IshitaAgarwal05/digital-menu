@@ -507,7 +507,11 @@
 
         function applyFilters() {
             const gridWrapper = document.getElementById('main-menu-grid'); const statusMsg = document.getElementById('status-msg');
-            const searchTerm = document.getElementById('search-bar').value.toLowerCase(); const sortValue = document.getElementById('sort-dropdown').value;
+            const searchTerm = document.getElementById('search-bar').value.toLowerCase().trim(); 
+            const sortValue = document.getElementById('sort-dropdown').value;
+            
+            // 🔥 SMART SEARCH: Type kiye hue text ko alag-alag words mein todna 🔥
+            const searchWords = searchTerm.split(/\s+/).filter(w => w.length > 0);
 
             let filteredItems = allItems.filter(item => {
                 const isAvailable = String(item.available).toLowerCase() === 'yes' || item.available === true;
@@ -517,8 +521,17 @@
                                       (currentCategory === 'New Arrivals' ? isNewArrival(item) : 
                                       (item.category || 'More Favorites') === currentCategory);
                                       
-                if (searchTerm.trim() !== '') matchesCategory = true;
-                return isAvailable && matchesBrand && matchesCategory && (item.name ? item.name.toLowerCase().includes(searchTerm) : false);
+                if (searchTerm !== '') matchesCategory = true;
+                
+                // 🔥 SMART SEARCH LOGIC: Check karna ki saare words item ke naam mein hain ya nahi 🔥
+                let matchesSearch = true;
+                if (searchWords.length > 0) {
+                    let textToSearch = (item.name || '').toLowerCase();
+                    // Har ek word search text mein hona chahiye, chahe kisi bhi order mein ho
+                    matchesSearch = searchWords.every(word => textToSearch.includes(word));
+                }
+
+                return isAvailable && matchesBrand && matchesCategory && matchesSearch;
             });
 
             if (currentCategory === 'New Arrivals' && sortValue === 'default') {
@@ -536,11 +549,11 @@
             }
 
             let titlePrefix = currentBrand !== 'All Brands' ? currentBrand + ' ' : '';
-            let titleText = searchTerm.trim() !== '' ? 'Search Results' : (currentCategory === 'New Arrivals' ? 'New Arrivals' : (currentCategory === 'All Items' ? 'Menu' : currentCategory));
+            let titleText = searchTerm !== '' ? 'Search Results' : (currentCategory === 'New Arrivals' ? 'New Arrivals' : (currentCategory === 'All Items' ? 'Menu' : currentCategory));
             document.getElementById('current-category-title').innerText = titlePrefix + titleText;
             document.getElementById('item-count').innerText = `${filteredItems.length} items`;
 
-            if (filteredItems.length === 0) { statusMsg.innerHTML = `<div style="padding: 40px 10px; text-align: center;"><span style="font-size: 3em;">🍦</span><h3 style="color: #64748b; margin: 10px 0 5px 0;">No items found</h3><p style="margin: 0; font-size: 0.9em; color:#94a3b8;">Try changing your filters.</p><button onclick="setCategory('All Items'); setBrand('All Brands'); document.getElementById('search-bar').value='';" class="action-btn" style="margin: 15px auto; border-color: var(--glacier-blue); color: var(--glacier-blue);">Clear Filters</button></div>`; statusMsg.style.display = 'block'; gridWrapper.innerHTML = ''; return; }
+            if (filteredItems.length === 0) { statusMsg.innerHTML = `<div style="padding: 40px 10px; text-align: center;"><span style="font-size: 3em;">🍦</span><h3 style="color: #64748b; margin: 10px 0 5px 0;">No items found</h3><p style="margin: 0; font-size: 0.9em; color:#94a3b8;">Try changing your filters.</p><button onclick="setCategory('All Items'); setBrand('All Brands'); document.getElementById('search-bar').value=''; applyFilters();" class="action-btn" style="margin: 15px auto; border-color: var(--glacier-blue); color: var(--glacier-blue);">Clear Filters</button></div>`; statusMsg.style.display = 'block'; gridWrapper.innerHTML = ''; return; }
 
             statusMsg.style.display = 'none'; let newHTML = '';
             filteredItems.forEach((item, index) => {
