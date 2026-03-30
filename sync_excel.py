@@ -8,7 +8,10 @@ import re
 from datetime import datetime
 
 # Configuration
-MONGO_URI = "mongodb://localhost:27017/"
+from dotenv import load_dotenv
+load_dotenv()
+
+MONGO_URI = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
 DB_NAME = "digital_menu"
 EXCEL_PATH = "./Digital_Menu.xlsx"
 IMAGE_DIR = "/home/ishita/Desktop/clg/couding/glacier/digital-menu/frontend/public/assets/products"
