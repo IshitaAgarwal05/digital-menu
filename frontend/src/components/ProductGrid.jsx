@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
 
-const ProductGrid = ({ products = [] }) => {
+const ProductGrid = ({ products = [], onProductClick }) => {
     return (
         <motion.div
             className="menu-grid"
@@ -12,7 +12,11 @@ const ProductGrid = ({ products = [] }) => {
             transition={{ duration: 0.5 }}
         >
             {products && products.map(product => (
-                <ProductCard key={product._id} product={product} />
+                <ProductCard
+                    key={product._id}
+                    product={product}
+                    onClick={() => onProductClick(product)}
+                />
             ))}
         </motion.div>
     );

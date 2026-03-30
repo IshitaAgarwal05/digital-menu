@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
 import { CartContext } from '../context/CartContext';
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onClick }) => {
   const { cart, addToCart, changeQty } = useContext(CartContext);
   const cartItem = cart[product.name];
 
@@ -17,14 +17,14 @@ const ProductCard = ({ product }) => {
 
   return (
     <motion.div
-      className="menu-card"
+      className={`menu-card ${product.bestseller ? 'bestseller-card' : ''} ${product.mrp && product.mrp > product.price ? 'discount-card' : ''}`}
       layout
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       whileHover={{ y: -5, boxShadow: '0 8px 25px rgba(0,0,0,0.1)' }}
       transition={{ duration: 0.3 }}
     >
-      <div className="card-img-wrapper">
+      <div className="card-img-wrapper" onClick={onClick} style={{ cursor: 'zoom-in' }}>
         {product.bestseller && <div className="bestseller-badge">⭐ Bestseller</div>}
         {product.mrp && product.mrp > product.price && (
           <div className="discount-tag">

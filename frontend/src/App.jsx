@@ -5,10 +5,12 @@ import Header from './components/Header'
 import BrandFilter from './components/BrandFilter'
 import CategorySidebar from './components/CategorySidebar'
 import CartBanner from './components/CartBanner'
-import CartModal from './components/CartModal'
+import CartDrawer from './components/CartDrawer'
 import AuthModal from './components/AuthModal'
 import ProfileModal from './components/ProfileModal'
 import Footer from './components/Footer'
+import { CartContext } from './context/CartContext'
+import { useContext } from 'react'
 
 // Admin Pages
 import AdminLayout from './pages/admin/AdminLayout'
@@ -17,7 +19,7 @@ import AdminOrders from './pages/admin/AdminOrders'
 import AdminProducts from './pages/admin/AdminProducts'
 
 const ShopView = () => {
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const { toggleCart } = useContext(CartContext);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -30,9 +32,9 @@ const ShopView = () => {
         <Home />
       </div>
       <Footer />
-      <CartBanner onClick={() => setIsCartOpen(true)} />
+      <CartBanner onClick={() => toggleCart(true)} />
 
-      {isCartOpen && <CartModal onClose={() => setIsCartOpen(false)} />}
+      <CartDrawer />
       {isAuthOpen && <AuthModal onClose={() => setIsAuthOpen(false)} />}
       {isProfileOpen && <ProfileModal onClose={() => setIsProfileOpen(false)} />}
     </div>

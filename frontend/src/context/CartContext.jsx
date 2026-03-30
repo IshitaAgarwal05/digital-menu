@@ -4,6 +4,15 @@ export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState({});
+    const [isCartOpen, setIsCartOpen] = useState(false);
+
+    const toggleCart = (open) => {
+        if (typeof open === 'boolean') {
+            setIsCartOpen(open);
+        } else {
+            setIsCartOpen(!isCartOpen);
+        }
+    };
 
     useEffect(() => {
         const savedCart = localStorage.getItem('cart');
@@ -30,7 +39,8 @@ export const CartProvider = ({ children }) => {
                     [product.name]: {
                         price: product.price,
                         qty: 1,
-                        brand: product.brand
+                        brand: product.brand,
+                        image: product.image
                     }
                 };
             }
@@ -64,7 +74,10 @@ export const CartProvider = ({ children }) => {
     const totalPrice = Object.values(cart).reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
 
     return (
-        <CartContext.Provider value={{ cart, addToCart, changeQty, clearCart, totalQty, totalPrice }}>
+        <CartContext.Provider value={{
+            cart, addToCart, changeQty, clearCart, totalQty, totalPrice,
+            isCartOpen, toggleCart
+        }}>
             {children}
         </CartContext.Provider>
     );

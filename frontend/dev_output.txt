@@ -1,0 +1,11 @@
+
+> frontend@0.0.0 dev
+> vite --host
+
+error when starting dev server:
+Error: Port 5173 is already in use
+    at httpServerStart (file:///home/ishita/Desktop/clg/couding/glacier/digital-menu/frontend/node_modules/vite/dist/node/chunks/node.js:10635:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async startServer (file:///home/ishita/Desktop/clg/couding/glacier/digital-menu/frontend/node_modules/vite/dist/node/chunks/node.js:26219:30)
+    at async Object.listen (file:///home/ishita/Desktop/clg/couding/glacier/digital-menu/frontend/node_modules/vite/dist/node/chunks/node.js:26040:4)
+    at async CAC.<anonymous> (file:///home/ishita/Desktop/clg/couding/glacier/digital-menu/frontend/node_modules/vite/dist/node/cli.js:722:3)

@@ -4,6 +4,8 @@ import api from '../services/api';
 import ProductGrid from '../components/ProductGrid';
 import SearchBar from '../components/SearchBar';
 import SortDropdown from '../components/SortDropdown';
+import SkeletonCard from '../components/SkeletonCard';
+import ProductDetailModal from '../components/ProductDetailModal';
 import { FilterContext } from '../context/FilterContext';
 
 const Home = () => {
@@ -12,6 +14,7 @@ const Home = () => {
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
     const [totalItems, setTotalItems] = useState(0);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     const { currentCategory, currentBrand, searchTerm, sortBy } = useContext(FilterContext);
     const { ref, inView } = useInView();
@@ -78,15 +81,24 @@ const Home = () => {
                 <span className="section-count">{totalItems} items</span>
             </div>
 
-            <ProductGrid products={products} />
-
-            {loading && (
-                <div id="status-msg" style={{ display: 'block', padding: '20px' }}>
-                    Stocking our freezer... Please wait!
+            {loading && products.length === 0 ? (
+                <div className="menu-grid">
+                    {[...Array(8)].map((_, i) => <SkeletonCard key={i} />)}
                 </div>
+            ) : (
+                <ProductGrid products={products} onProductClick={(p) => setSelectedProduct(p)} />
+            )}
+
+            {loading && products.length > 0 && (
+                <div className="loading-more-trigger skeleton-bg" style={{ height: '40px', margin: '20px 0', borderRadius: '12px' }}></div>
             )}
 
             <div ref={ref} style={{ height: '20px' }} />
+
+            <ProductDetailModal
+                product={selectedProduct}
+                onClose={() => setSelectedProduct(null)}
+            />
         </main>
     );
 };
