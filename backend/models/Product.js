@@ -11,6 +11,7 @@ const productSchema = new mongoose.Schema({
     available: { type: Boolean, default: true },
     volume: { type: String },
     discount: { type: Number, default: 0 },
+    launchingyear: { type: Date },
 }, { timestamps: true });
 
 productSchema.index({ name: 'text', brand: 'text' });

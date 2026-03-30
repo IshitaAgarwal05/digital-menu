@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import confetti from 'canvas-confetti';
 
 export const CartContext = createContext();
 
@@ -26,6 +27,12 @@ export const CartProvider = ({ children }) => {
     }, [cart]);
 
     const addToCart = (product) => {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#38bdf8', '#1e40af', '#ffffff']
+        });
         setCart((prev) => {
             const existing = prev[product.name];
             if (existing) {

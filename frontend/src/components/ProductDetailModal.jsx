@@ -4,6 +4,7 @@ import { CartContext } from '../context/CartContext';
 
 const ProductDetailModal = ({ product, onClose }) => {
     const { cart, addToCart, changeQty } = useContext(CartContext);
+    const [activeTab, setActiveTab] = React.useState('details');
 
     if (!product) return null;
 
@@ -43,16 +44,62 @@ const ProductDetailModal = ({ product, onClose }) => {
 
                             <h2 className="detail-title">{product.name}</h2>
 
-                            <p className="detail-desc">
-                                Indulge in the premium taste of {product.brand}'s {product.name}.
-                                Perfect for sharing or treating yourself to a moment of frozen perfection.
-                            </p>
+                            {/* Tab Navigation */}
+                            <div className="detail-tabs">
+                                <button
+                                    className={`detail-tab ${activeTab === 'details' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('details')}
+                                >
+                                    Details
+                                </button>
+                                <button
+                                    className={`detail-tab ${activeTab === 'specs' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('specs')}
+                                >
+                                    Specs
+                                </button>
+                            </div>
 
-                            <div className="detail-meta">
-                                <div className="detail-tag-box" style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
-                                    {product.bestseller && <span className="tag-bestseller">⭐ Bestseller</span>}
-                                    <span className="tag-stock">In Stock ⚡</span>
-                                </div>
+                            <div className="tab-viewport">
+                                {activeTab === 'details' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, x: 10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        className="tab-content"
+                                    >
+                                        <p className="detail-desc">
+                                            Indulge in the premium taste of {product.brand}'s {product.name}.
+                                            Perfect for sharing or treating yourself to a moment of frozen perfection.
+                                        </p>
+                                        <div className="detail-tag-box" style={{ display: 'flex', gap: '15px' }}>
+                                            {product.bestseller && <span className="tag-bestseller">⭐ Bestseller</span>}
+                                            <span className="tag-stock">In Stock ⚡</span>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {activeTab === 'specs' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, x: 10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        className="tab-content"
+                                    >
+                                        <div className="specs-grid">
+                                            <div className="spec-item">
+                                                <span className="spec-label">Brand</span>
+                                                <span className="spec-value">{product.brand}</span>
+                                            </div>
+                                            <div className="spec-item">
+                                                <span className="spec-label">Category</span>
+                                                <span className="spec-value">{product.category}</span>
+                                            </div>
+                                            <div className="spec-item">
+                                                <span className="spec-label">Volume/Size</span>
+                                                <span className="spec-value">{product.name.match(/(\d+\s*(ml|l|ltr|gm|g|kg))/i)?.[0] || 'Standard Pack'}</span>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
                             </div>
 
                             <div className="detail-actions">

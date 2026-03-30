@@ -6,18 +6,29 @@ const Product = require('../models/Product');
 const getProducts = async (req, res) => {
     console.log('GET /api/products - Incoming Query:', req.query);
     try {
-        const { page = 1, limit = 12, category, brand, search, sortBy } = req.query;
+        const { page = 1, limit = 12, category, brand, search, sortBy, flavor, skip: skipParam } = req.query;
 
         const query = { available: true };
 
-        if (category && category !== 'All Items' && category !== 'Best Sellers') {
+        const normCategory = category ? category.toString().trim().toLowerCase() : '';
+
+        if (normCategory === 'new arrivals') {
+            query.launchingyear = { $ne: null };
+        } else if (normCategory === 'discounts') {
+            // Mirror the frontend rule: show badge when mrp exists and mrp > price
+            query.mrp = { $gt: 0 };
+            query.$expr = { $gt: ['$mrp', '$price'] };
+        } else if (normCategory && normCategory !== 'all items') {
             query.category = category;
-        } else if (category === 'Best Sellers') {
-            query.bestseller = true;
         }
 
         if (brand && brand !== 'All Brands') {
             query.brand = brand;
+        }
+
+        if (flavor) {
+            // Case-insensitive regex match on product name for flavor keyword
+            query.name = { $regex: flavor, $options: 'i' };
         }
 
         if (search) {
@@ -27,10 +38,10 @@ const getProducts = async (req, res) => {
         let sort = {};
         if (sortBy === 'low-high') sort.price = 1;
         else if (sortBy === 'high-low') sort.price = -1;
-        else if (sortBy === 'disc-high-low') sort.discount = -1; // Need to calculate or store discount
-        else sort.createdAt = -1;
+        else if (sortBy === 'disc-high-low') sort.discount = -1;
+        else sort.launchingyear = -1; // Default: show newest first
 
-        const skip = (page - 1) * limit;
+        const skip = skipParam !== undefined ? Number(skipParam) : (page - 1) * limit;
 
         const products = await Product.find(query)
             .sort(sort)

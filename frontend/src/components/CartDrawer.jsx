@@ -9,6 +9,7 @@ const CartDrawer = () => {
     const { cart, changeQty, clearCart, totalPrice, totalQty, isCartOpen, toggleCart } = useContext(CartContext);
     const { user } = useContext(AuthContext);
     const [instructions, setInstructions] = useState('');
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
 
     const cartItems = Object.entries(cart);
 
@@ -37,6 +38,11 @@ const CartDrawer = () => {
         window.location.href = waUrl;
     };
 
+    const handleClearCart = () => {
+        clearCart();
+        setShowClearConfirm(false);
+    };
+
     return (
         <AnimatePresence>
             {isCartOpen && (
@@ -50,6 +56,14 @@ const CartDrawer = () => {
                     />
                     <motion.div
                         className="cart-drawer"
+                        drag="x"
+                        dragConstraints={{ left: 0, right: 300 }}
+                        dragElastic={0.05}
+                        onDragEnd={(e, { offset, velocity }) => {
+                            if (offset.x > 100 || velocity.x > 500) {
+                                toggleCart(false);
+                            }
+                        }}
                         initial={{ x: '100%' }}
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
@@ -160,7 +174,16 @@ const CartDrawer = () => {
                                     <span>₹{totalPrice}</span>
                                 </div>
                                 <button className="checkout-btn" onClick={handleCheckout}>Proceed to Checkout</button>
-                                <button className="clear-all-btn" onClick={clearCart}>Clear All</button>
+
+                                {showClearConfirm ? (
+                                    <div className="clear-confirm-row">
+                                        <span>Sure?</span>
+                                        <button className="confirm-yes" onClick={handleClearCart}>Yes, Clear</button>
+                                        <button className="confirm-no" onClick={() => setShowClearConfirm(false)}>No</button>
+                                    </div>
+                                ) : (
+                                    <button className="clear-all-btn" onClick={() => setShowClearConfirm(true)}>Clear My Cart</button>
+                                )}
                             </div>
                         )}
                     </motion.div>

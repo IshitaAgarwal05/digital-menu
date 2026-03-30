@@ -9,6 +9,7 @@ import CartDrawer from './components/CartDrawer'
 import AuthModal from './components/AuthModal'
 import ProfileModal from './components/ProfileModal'
 import Footer from './components/Footer'
+import GlacierLoader from './components/GlacierLoader'
 import { CartContext } from './context/CartContext'
 import { useContext } from 'react'
 
@@ -22,6 +23,16 @@ const ShopView = () => {
   const { toggleCart } = useContext(CartContext);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsInitialLoad(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isInitialLoad) {
+    return <GlacierLoader />;
+  }
 
   return (
     <div className="app-container">

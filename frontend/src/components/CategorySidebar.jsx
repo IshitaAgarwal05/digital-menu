@@ -3,14 +3,14 @@ import api from '../services/api';
 import { FilterContext } from '../context/FilterContext';
 
 const CategorySidebar = () => {
-    const [categories, setCategories] = useState(['Best Sellers', 'All Items']);
+    const [categories, setCategories] = useState(['New Arrivals', 'All Items', 'Discounts']);
     const { currentCategory, setCurrentCategory } = useContext(FilterContext);
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
                 const { data } = await api.get('/products/filters');
-                setCategories(['Best Sellers', 'All Items', ...data.categories]);
+                setCategories(['New Arrivals', 'All Items', 'Discounts', ...data.categories]);
             } catch (error) {
                 console.error('Error fetching categories', error);
             }
@@ -20,8 +20,9 @@ const CategorySidebar = () => {
 
     const getCategoryIcon = (cat) => {
         const lCat = cat.toLowerCase();
-        if (lCat === 'best sellers') return '⭐';
+        if (lCat === 'new arrivals') return '🔥';
         if (lCat === 'all items') return '🍨';
+        if (lCat === 'discounts') return '%';
         if (lCat.includes('family') || lCat.includes('pack')) return '📦';
         if (lCat.includes('tub')) return '🪣';
         if (lCat.includes('cone')) return '🍦';

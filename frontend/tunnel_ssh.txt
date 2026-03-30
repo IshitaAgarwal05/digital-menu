@@ -20,3 +20,5 @@ https://localhost.run/docs/
 
 ** your connection id is 11b033c2-44df-4ea9-b5d3-927b655119e3, please mention it if you send me a message about an issue. **
 
+tcsetattr: Input/output error
+client_loop: send disconnect: Connection timed out
