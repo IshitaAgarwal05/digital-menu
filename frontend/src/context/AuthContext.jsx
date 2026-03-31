@@ -35,8 +35,28 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const addAddress = async (addressData) => {
+        const { data } = await api.post('/users/address', addressData);
+        setUser(prev => ({ ...prev, addresses: data }));
+        return data;
+    };
+
+    const updateAddress = async (id, addressData) => {
+        const { data } = await api.put(`/users/address/${id}`, addressData);
+        setUser(prev => ({ ...prev, addresses: data }));
+        return data;
+    };
+
+    const deleteAddress = async (id) => {
+        await api.delete(`/users/address/${id}`);
+        setUser(prev => ({
+            ...prev,
+            addresses: prev.addresses.filter(a => a._id !== id)
+        }));
+    };
+
     return (
-        <AuthContext.Provider value={{ user, setUser, loading, login, logout }}>
+        <AuthContext.Provider value={{ user, setUser, loading, login, logout, addAddress, updateAddress, deleteAddress }}>
             {children}
         </AuthContext.Provider>
     );

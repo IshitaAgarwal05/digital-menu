@@ -29,13 +29,13 @@ const Footer = () => {
                         ></iframe>
                     </div>
                 </div>
-                <div className="footer-section">
+                {/* <div className="footer-section">
                     <h4>Follow Us</h4>
                     <div className="social-links">
                         <a href="#">Instagram</a>
                         <a href="#">Email</a>
                     </div>
-                </div>
+                </div> */}
             </div>
             <div className="footer-bottom">
                 <div className="footer-copyright">

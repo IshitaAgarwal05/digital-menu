@@ -80,10 +80,13 @@ export const CartProvider = ({ children }) => {
     const totalQty = Object.values(cart).reduce((acc, curr) => acc + curr.qty, 0);
     const totalPrice = Object.values(cart).reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
 
+    const [orderType, setOrderType] = useState('pickup');
+    const [deliveryAddress, setDeliveryAddress] = useState(null);
+
     return (
         <CartContext.Provider value={{
             cart, addToCart, changeQty, clearCart, totalQty, totalPrice,
-            isCartOpen, toggleCart
+            isCartOpen, toggleCart, orderType, setOrderType, deliveryAddress, setDeliveryAddress
         }}>
             {children}
         </CartContext.Provider>

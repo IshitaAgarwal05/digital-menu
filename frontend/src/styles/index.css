@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@400;500;600;700;800&display=swap');
+@import './elite-cart.css';
 
 :root {
     --primary-color: #f97316;
@@ -255,9 +256,10 @@ header {
 .main-layout {
     display: flex;
     flex: 1;
-    overflow: visible;
+    overflow-x: hidden;
     background: var(--main-bg);
     width: 100%;
+    min-width: 0;
 }
 
 /* SIDEBAR */
@@ -903,8 +905,8 @@ header {
 .main-footer {
     background: var(--card-bg);
     border-top: 1px solid var(--border-color);
-    padding: 80px 20px 40px;
-    margin-top: 60px;
+    padding: 40px 20px;
+    margin-top: 20px;
     transition: background 0.3s, border-color 0.3s;
 }
 
@@ -1122,7 +1124,7 @@ header {
     display: flex;
     flex-direction: column;
     overflow: visible;
-    padding: 20px 30px;
+    padding: 5px 30px 30px 30px;
     box-sizing: border-box;
 }
 
@@ -1618,8 +1620,10 @@ header {
     }
 
     .content-area {
-        padding: 15px;
-        padding-bottom: 80px;
+        flex: 1;
+        padding: 5px 30px 30px 30px;
+        box-sizing: border-box;
+        min-width: 0;
     }
 
     .menu-grid {
@@ -2094,7 +2098,7 @@ body {
 .load-more-container {
     display: flex;
     justify-content: center;
-    padding: 30px 20px;
+    padding: 10px 20px;
 }
 
 .load-more-btn {
