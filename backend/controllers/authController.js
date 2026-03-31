@@ -49,7 +49,7 @@ const verifyOTP = async (req, res) => {
             _id: user._id,
             phone: user.phone,
             name: user.name,
-            address: user.address,
+            addresses: user.addresses,
             token
         });
     } catch (error) {

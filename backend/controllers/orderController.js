@@ -4,11 +4,17 @@ const Order = require('../models/Order');
 // @route   POST /api/orders
 // @access  Private
 const addOrder = async (req, res) => {
-    const { items, totalAmount, itemsSummary } = req.body;
+    const { items, totalAmount, itemsSummary, orderType, deliveryAddress } = req.body;
 
     if (items && items.length === 0) {
         res.status(400).json({ message: 'No order items' });
         return;
+    }
+
+    // Calculate delivery charge logic
+    let deliveryCharge = 0;
+    if (orderType === 'delivery') {
+        deliveryCharge = totalAmount >= 1000 ? 0 : 80;
     }
 
     const order = new Order({
@@ -16,6 +22,9 @@ const addOrder = async (req, res) => {
         items,
         totalAmount,
         itemsSummary,
+        orderType: orderType || 'pickup',
+        deliveryAddress: orderType === 'delivery' ? deliveryAddress : undefined,
+        deliveryCharge,
     });
 
     const createdOrder = await order.save();
@@ -30,4 +39,19 @@ const getMyOrders = async (req, res) => {
     res.json(orders);
 };
 
-module.exports = { addOrder, getMyOrders };
+// @desc    Update order status
+// @route   PUT /api/orders/:id/status
+// @access  Private/Admin
+const updateOrderStatus = async (req, res) => {
+    const order = await Order.findById(req.params.id);
+
+    if (order) {
+        order.status = req.body.status || order.status;
+        const updatedOrder = await order.save();
+        res.json(updatedOrder);
+    } else {
+        res.status(404).json({ message: 'Order not found' });
+    }
+};
+
+module.exports = { addOrder, getMyOrders, updateOrderStatus };
